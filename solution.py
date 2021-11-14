@@ -1,6 +1,6 @@
 import numpy as np
 #! REMOVE THESE BEFORE SUBMITTING !#
-from icecream import ic   # library to pretty print, call: ic(variable) is equivalent to print(f"variable:{variable}")
+# from icecream import ic   # library to pretty print, call: ic(variable) is equivalent to print(f"variable:{variable}")
 # import pandas as pd       # wrapper for np.arrays, used in a similar way to an SQL table (join,  sort, aggregate, etc)
 #! ############################## !#
 
@@ -34,7 +34,6 @@ class SVM:
        
         returns : float
         """
-        # ic(self.w.shape)
         # y is already encoded in 1 hot so we don't need to modify it
         xw = np.dot(x, self.w)  # shape: (minibatch size, num_classes)
         xwy = np.dot(xw.T, y)   # (minibatch size, num_classes).T x (minibatch size, num_classes) = (num_classes, num_classes)
@@ -49,10 +48,19 @@ class SVM:
         """
         x : numpy array of shape (minibatch size, num_features)
         y : numpy array of shape (minibatch size, num_classes)
+        w : numpy array of shape (num_features, num_classes) (1 col per class)
+        
         returns : numpy array of shape (num_features, num_classes)
         """
-        
-        pass
+        num_features = x.shape[1]
+        wx = np.dot(x, self.w) # shape: (n, m)
+        new_y = -2 * y
+        right_side = new_y + wx # shape: (n, m)
+        # 2 x_{i,k}: (n,)
+        # (m,n) x (n,) = (m,)
+        # * grad with reg
+        grad = np.array([(np.dot(right_side.T, 2* x[:, k]))/x.shape[0] + self.C * self.w[k, :] for k in np.arange(num_features)]) # (k,m)
+        return grad
 
     # Batcher function
     def minibatch(self, iterable1, iterable2, size=1):
@@ -154,20 +162,31 @@ def test_3a():
 def test_3b(x_train, y_train):
     svm = SVM(eta= 0.0001, C= 2, niter= 1, batch_size= 5000, verbose= False)
     
-    x_train = x_train[:5000, :]
+    x_train, y_train = prep_svm(x_train, y_train, svm)
+    loss = svm.compute_loss(x_train, y_train)
+    # ic(loss)
+
+def test_3c(x_train, y_train):
+    svm = SVM(eta= 0.0001, C= 2, niter= 1, batch_size= 5000, verbose= False)
+    x_train, y_train = prep_svm(x_train, y_train, svm, n_features = 5, n_classes = 4)
+    grad = svm.compute_gradient(x_train, y_train)
+    # ic(grad)
+
+def prep_svm(x_train, y_train, svm, n_features=3073, n_classes=8):
+    x_train = x_train[:5000, :n_features]
     y_train = y_train[:5000]
-    y_train = np.random.randint(0, 8, y_train.shape) # put 8 classes to mimic gradescope
+    y_train = np.random.randint(0, n_classes, y_train.shape) # put 8 classes to mimic gradescope
     
     num_features = x_train.shape[1]
+    svm.num_features = num_features
+    
     m = y_train.max() + 1   # num_classes
     svm.m = m
     y_train = svm.make_one_versus_all_labels(y_train, m)
     
     svm.w = np.zeros([num_features, m])
-    loss = svm.compute_loss(x_train, y_train)
-    ic(loss)
-
-
+    return x_train,y_train
+    
 
 if __name__ == "__main__":
 
@@ -181,7 +200,8 @@ if __name__ == "__main__":
     print("Fitting the model...")
     # svm = SVM(eta=0.0001, C=2, niter=200, batch_size=5000, verbose=False)
     # test_3a()
-    test_3b(x_train, y_train)
+    # test_3b(x_train, y_train)
+    # test_3c(x_train, y_train)
     
     # train_losses, train_accs, test_losses, test_accs = svm.fit(x_train, y_train, x_test, y_test)
 
