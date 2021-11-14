@@ -31,16 +31,7 @@ class SVM:
         x : numpy array of shape (minibatch size, num_features)
         y : numpy array of shape (minibatch size, num_classes)
         w : numpy array of shape (num_features, num_classes) (1 col per class)
-        
-        
-        if they were not matrices:
-        
-        x : np array of shape (, num_features)
-        y : np array of shape (, num_classes)
-        w : np array of shape (num_features, )
-        
-        xw : (, num_features) x (num_features, ) = (1,1)
-        xwy : (1,1) x (, num_classes) = (1, num_classes)
+       
         returns : float
         """
         # ic(self.w.shape)
