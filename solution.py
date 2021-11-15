@@ -48,18 +48,11 @@ class SVM:
         y : numpy array of shape (minibatch size, num_classes)
         returns : numpy array of shape (num_features, num_classes)
         """
-        num_features = x.shape[1]
-        wx = np.dot(x, self.w)  # shape: (n, m)
-        new_y = -2 * y
-        right_side = new_y + wx # shape: (n, m)
-        
-        # right_side: (m,n) x 2_{i,k}: (n,) = (m,)
-        # * grad with reg
-        # pseudo code: [(<(-2y + wx), 2x[:, k]>) / n + C*w_{k,:} for k in n_features]
-        grad = np.array([(np.dot(right_side.T, 2* x[:, k]))/x.shape[0] + self.C * self.w[k, :] for k in np.arange(num_features)]) # (k,m)
-        # sorry this is really ugly, I'll find a way to make it prettier (and more efficient, python loop isn't good)
-        # https://numpy.org/doc/stable/reference/generated/numpy.apply_over_axes.html : looked promising but you can't use the index
-        return grad
+        xw = np.dot(x, self.w)  # shape: (minibatch size, num_classes)
+
+        hinge_grad = 2 * x.T @ (xw - self.hinge_offset * y) / x.shape[0]
+        regul_grad = self.C * self.w
+        return hinge_grad + regul_grad
 
     # Batcher function
     def minibatch(self, iterable1, iterable2, size=1):
