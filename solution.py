@@ -80,7 +80,8 @@ class SVM:
         y : numpy array of shape (num_examples, num_classes)
         returns : float
         """
-        pass
+        assert y_inferred.shape == y.shape
+        return (y_inferred[np.where(y == 1)] == 1).sum() / y.shape[0]
 
     def fit(self, x_train, y_train, x_test, y_test):
         """
