@@ -155,13 +155,133 @@ def load_data():
     return x_train, y_train, x_test, y_test
 
 
-if __name__ == "__main__":
+def calc_loss_acc(c_values, *args, **kwargs):
+    trl, tra = {}, {}
+    tel, tea = {}, {}
 
+    for c in c_values:
+        svm = SVM(C=c, *args, **kwargs)
+        plot_train_losses, plot_train_accs, plot_test_losses, plot_test_accs = svm.fit(x_train, y_train, x_test, y_test)
+        trl[c] = plot_train_losses
+        tra[c] = plot_train_accs
+        tel[c] = plot_test_losses
+        tea[c] = plot_test_accs
+
+    return trl, tra, tel, tea
+
+
+def show_graphics(data, figsize=6, same_plot=False, export=False, export_name='plot'):
+    import matplotlib
+    if export:
+        matplotlib.use("pgf")
+        matplotlib.rcParams.update({
+            "pgf.texsystem": "pdflatex",
+            'font.family': 'serif',
+            'text.usetex': True,
+            'pgf.rcfonts': False,
+        })
+
+    import matplotlib.pyplot as plt
+    plt.rcParams["figure.figsize"] = (figsize, figsize)
+
+    ft_size = 1.6 * figsize
+    ft_ticklabel_size = figsize
+
+    trl, tra, tel, tea = data
+    epochs = np.arange(len(list(trl.values())[0]))
+    c_values = trl.keys()
+
+    def plot_var(values):
+        for c in c_values:
+            plt.plot(epochs, values[c], label=str(c))
+        plt.xlabel("epoch")
+
+    def output():
+        if export:
+            plt.savefig(export_name+'.png', dpi=fig.dpi)
+            plt.savefig(export_name+'.pgf')
+        else:
+            plt.show()
+
+    if same_plot:
+        fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, sharex='col', sharey='row')
+
+        ax1.set_title("Train", fontsize=ft_size)
+        ax2.set_title("Test", fontsize=ft_size)
+
+        plt.setp(ax1.get_xticklabels(), visible=False)
+        plt.setp(ax2.get_xticklabels(), visible=False)
+        plt.setp(ax2.get_yticklabels(), visible=False)
+        plt.setp(ax4.get_yticklabels(), visible=False)
+
+        ax1.tick_params(axis="x", direction="in")
+        ax2.tick_params(axis="x", direction="in")
+        ax2.tick_params(axis="y", direction="inout")
+        ax4.tick_params(axis="y", direction="inout")
+
+        ax1.tick_params(axis='y', which='major', labelsize=ft_ticklabel_size)
+        ax3.tick_params(axis='y', which='major', labelsize=ft_ticklabel_size)
+        ax3.tick_params(axis='x', which='major', labelsize=ft_ticklabel_size)
+        ax4.tick_params(axis='x', which='major', labelsize=ft_ticklabel_size)
+
+        plt.subplots_adjust(hspace=.0)
+        plt.subplots_adjust(wspace=.0)
+
+        ax1.set_ylabel("loss", fontsize=ft_size)
+        ax3.set_ylabel("accuracy", fontsize=ft_size)
+        ax3.set_xlabel("epoch", fontsize=ft_size)
+        ax4.set_xlabel("epoch", fontsize=ft_size)
+
+        for c, c_trl in trl.items():
+            ax1.plot(epochs, trl[c], label=str(c))
+
+        for c, c_tel in tel.items():
+            ax2.plot(epochs, tel[c], label=str(c))
+
+        for c, c_tra in tra.items():
+            ax3.plot(epochs, tra[c], label=str(c))
+
+        for c, c_tea in tea.items():
+            ax4.plot(epochs, tea[c], label=str(c))
+
+        leg = ax4.legend(loc='lower right', title='Paramètre de \n régularisation C', title_fontsize='medium', fontsize='medium', borderpad=0.4)
+        plt.setp(leg.get_title(), multialignment='center')
+        leg._legend_box.align = "center"
+
+        output()
+
+    else:
+        plot_var(trl)
+        plt.ylabel("loss")
+        plt.legend(loc='lower left', title='C')
+        output()
+
+        plot_var(tel)
+        plt.ylabel("loss")
+        plt.legend(loc='lower left', title='C')
+        output()
+
+        plot_var(tra)
+        plt.ylabel("accuracy")
+        plt.legend(loc='lower right', title='C')
+        output()
+
+        plot_var(tea)
+        plt.ylabel("accuracy")
+        plt.legend(loc='lower right', title='C')
+        output()
+
+
+if __name__ == "__main__":
     x_train, y_train, x_test, y_test = load_data()
 
     print("Fitting the model...")
     # svm = SVM(eta=0.0001, C=2, niter=200, batch_size=5000, verbose=False)
     # train_losses, train_accs, test_losses, test_accs = svm.fit(x_train, y_train, x_test, y_test)
+
+    # To export plots losses and accuracies for different C
+    data = calc_loss_acc([1, 10, 30], eta=0.0001, niter=200, batch_size=5000, verbose=True)
+    show_graphics(data, figsize=7, same_plot=True, export=True, export_name="loss_acc_train_test")
 
     # # to infer after training, do the following:
     # y_inferred = svm.infer(x_test)
