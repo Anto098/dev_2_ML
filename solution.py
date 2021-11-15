@@ -67,7 +67,12 @@ class SVM:
         x : numpy array of shape (num_examples_to_infer, num_features)
         returns : numpy array of shape (num_examples_to_infer, num_classes)
         """
-        pass
+        assert self.w.shape[0] == x.shape[1]
+        scores = x @ self.w
+        pred_classes = scores.argmax(axis=1)
+        pred_ova = -np.ones(scores.shape)
+        pred_ova[np.arange(scores.shape[0]), pred_classes] = 1
+        return pred_ova
 
     def compute_accuracy(self, y_inferred, y):
         """
