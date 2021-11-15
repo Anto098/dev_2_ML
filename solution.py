@@ -1,8 +1,5 @@
 import numpy as np
-#! REMOVE THESE BEFORE SUBMITTING !#
-# from icecream import ic   # library to pretty print, call: ic(variable) is equivalent to print(f"variable:{variable}")
-# import pandas as pd       # wrapper for np.arrays, used in a similar way to an SQL table (join,  sort, aggregate, etc)
-#! ############################## !#
+
 
 class SVM:
     def __init__(self, eta, C, niter, batch_size, verbose):
@@ -23,15 +20,13 @@ class SVM:
         oh_labels.fill(-1)
         for (i, y_i) in enumerate(y):
             oh_labels[i, y_i] = 1
-        
+
         return oh_labels
 
     def compute_loss(self, x, y):
         """
-        x : numpy array of shape (minibatch size, num_features)
-        y : numpy array of shape (minibatch size, num_classes)
-        w : numpy array of shape (num_features, num_classes) (1 col per class)
-       
+        x : numpy array of shape (minibatch_size, num_features)
+        y : numpy array of shape (minibatch_size, num_classes)
         returns : float
         """
         # y is already encoded in 1 hot so we don't need to modify it
@@ -48,8 +43,6 @@ class SVM:
         """
         x : numpy array of shape (minibatch size, num_features)
         y : numpy array of shape (minibatch size, num_classes)
-        w : numpy array of shape (num_features, num_classes) (1 col per class)
-        
         returns : numpy array of shape (num_features, num_classes)
         """
         num_features = x.shape[1]
@@ -100,6 +93,8 @@ class SVM:
         self.m = y_train.max() + 1
         y_train = self.make_one_versus_all_labels(y_train, self.m)
         y_test = self.make_one_versus_all_labels(y_test, self.m)
+
+        # self.w : numpy array of shape (num_features, num_classes)
         self.w = np.zeros([self.num_features, self.m])
 
         train_losses = []
@@ -127,7 +122,7 @@ class SVM:
                 print(f"Iteration {iteration} | Train loss {train_loss:.04f} | Train acc {train_accuracy:.04f} |"
                       f" Test loss {test_loss:.04f} | Test acc {test_accuracy:.04f}")
 
-            # Record losses, accs
+            # Record losses, accuracies
             train_losses.append(train_loss)
             train_accs.append(train_accuracy)
             test_losses.append(test_loss)
@@ -157,55 +152,13 @@ def load_data():
 
     return x_train, y_train, x_test, y_test
 
-def test_3a():
-    svm = SVM(eta=0.0001, C=2, niter=200, batch_size=5000, verbose=False)
-    oh_labels = svm.make_one_versus_all_labels(y=np.array([1,0,2]), m=4)
-    # ic(oh_labels)
-
-def test_3b(x_train, y_train):
-    svm = SVM(eta= 0.0001, C= 2, niter= 1, batch_size= 5000, verbose= False)
-    
-    x_train, y_train = prep_svm(x_train, y_train, svm)
-    loss = svm.compute_loss(x_train, y_train)
-    # ic(loss)
-
-def test_3c(x_train, y_train):
-    svm = SVM(eta= 0.0001, C= 2, niter= 1, batch_size= 5000, verbose= False)
-    x_train, y_train = prep_svm(x_train, y_train, svm, n_features = 5, n_classes = 4)
-    grad = svm.compute_gradient(x_train, y_train)
-    # ic(grad)
-
-def prep_svm(x_train, y_train, svm, n_features=3073, n_classes=8):
-    x_train = x_train[:5000, :n_features]
-    y_train = y_train[:5000]
-    y_train = np.random.randint(0, n_classes, y_train.shape) # put 8 classes to mimic gradescope
-    
-    num_features = x_train.shape[1]
-    svm.num_features = num_features
-    
-    m = y_train.max() + 1   # num_classes
-    svm.m = m
-    y_train = svm.make_one_versus_all_labels(y_train, m)
-    
-    svm.w = np.zeros([num_features, m])
-    return x_train,y_train
-    
 
 if __name__ == "__main__":
 
-    # x_train: (20 000, 3 073)
-    # y_train: (20 000,)
-    # x_test: (4 000, 3 073)
-    # y_test: (4 000,)
-    # last col (3072) is bias (1 for each row/example)
     x_train, y_train, x_test, y_test = load_data()
 
     print("Fitting the model...")
     # svm = SVM(eta=0.0001, C=2, niter=200, batch_size=5000, verbose=False)
-    # test_3a()
-    # test_3b(x_train, y_train)
-    # test_3c(x_train, y_train)
-    
     # train_losses, train_accs, test_losses, test_accs = svm.fit(x_train, y_train, x_test, y_test)
 
     # # to infer after training, do the following:
@@ -216,6 +169,3 @@ if __name__ == "__main__":
     # svm.w = np.zeros([3073, 8])
     # grad = svm.compute_gradient(x_train, y_train_ova)
     # loss = svm.compute_loss(x_train, y_train_ova)
-    
-    
-
