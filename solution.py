@@ -2,12 +2,13 @@ import numpy as np
 
 
 class SVM:
-    def __init__(self, eta, C, niter, batch_size, verbose):
+    def __init__(self, eta, C, niter, batch_size, verbose, hinge_offset=2):
         self.eta = eta
         self.C = C
         self.niter = niter
         self.batch_size = batch_size
         self.verbose = verbose
+        self.hinge_offset = hinge_offset
 
     def make_one_versus_all_labels(self, y, m):
         """
@@ -31,13 +32,15 @@ class SVM:
         """
         # y is already encoded in 1 hot so we don't need to modify it
         xw = np.dot(x, self.w)  # shape: (minibatch size, num_classes)
-        xwy = np.dot(xw.T, y)   # (minibatch size, num_classes).T x (minibatch size, num_classes) = (num_classes, num_classes)
-        p = 2 - xwy 
-        max = np.maximum(np.zeros_like(p), p)
-        loss = np.power(max, 2)
-        mean_loss_per_class = np.mean(loss, axis=1)
-        sum_loss = np.sum(mean_loss_per_class)
-        return sum_loss
+        xwy = np.multiply(xw, y)
+        p = self.hinge_offset - xwy
+
+        max_func = np.maximum(np.zeros_like(p), p)
+        squared_l = np.power(max_func, 2)
+        mean_loss_per_class = np.sum(squared_l, axis=1)
+
+        regularization = self.C * (self.w ** 2).sum() / 2
+        return np.mean(mean_loss_per_class) + regularization
 
     def compute_gradient(self, x, y):
         """
