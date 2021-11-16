@@ -136,10 +136,10 @@ Antonin Roy : 20145595
 
 		      \begin{align*}
 			      \frac{\partial}{\partial\wkj} \left(\frac{1}{n}\sum_{(\mathbf{x}_i, y_i) \in S} \sum_{j'=1}^{m} \mathcal{L}\left(\mathbf{w}^{j'}; (\mathbf{x}_i, y_i))\right)\right)
-			       & = \frac{\partial}{\partial w_{k}^{j}} \left(\frac{1}{n}\sum_{(\mathbf{x}_i, y_i) \in S} \left(\mathcal{L}\left(\mathbf{w}^{j}; (\mathbf{x}_i, y_i)\right) +\underbrace{\sum_{\substack{j^{\prime}=1                      \\ j^{\prime} \neq j}}^{m} \mathcal{L}\left(\mathbf{w}^{j^{\prime}}; (\mathbf{x}_i, y_i)\right)}_{0 \text{ d'après } \ref{eq:derivL}}\right)\right)\\
-			       & = \frac{\partial}{\partial w_{k}^{j}} \left(\frac{1}{n}\sum_{(\mathbf{x}_i, y_i) \in S} \mathcal{L}\left(\mathbf{w}^{j}; (\mathbf{x}_i, y_i)\right)\right)                                                               \\
-			       & = \frac{1}{n}\sum_{(\mathbf{x}_i, y_i) \in S}\frac{\partial\mathcal{L}\left(\mathbf{w}^{j}; (\mathbf{x}_i, y_i)\right)}{\partial\wkj}                                                                                    \\
-			       & \overset{\ref{eq:derivL}}{=} -\frac{2}{n}\sum_{(\mathbf{x}_i, y_i) \in S}\max\left(0, 2 - \langle \mathbf{w}^{j}, \mathbf{x}_i \rangle\mathbbm{1}_{\{y_i = j^{\prime}\}}\right)x_{i,k}\mathbbm{1}_{\{y_i = j^{\prime}\}}
+			       & = \frac{\partial}{\partial w_{k}^{j}} \left(\frac{1}{n}\sum_{(\mathbf{x}_i, y_i) \in S} \left(\mathcal{L}\left(\mathbf{w}^{j}; (\mathbf{x}_i, y_i)\right) +\underbrace{\sum_{\substack{j^{\prime}=1    \\ j^{\prime} \neq j}}^{m} \mathcal{L}\left(\mathbf{w}^{j^{\prime}}; (\mathbf{x}_i, y_i)\right)}_{0 \text{ d'après } \ref{eq:derivL}}\right)\right)\\
+			       & = \frac{\partial}{\partial w_{k}^{j}} \left(\frac{1}{n}\sum_{(\mathbf{x}_i, y_i) \in S} \mathcal{L}\left(\mathbf{w}^{j}; (\mathbf{x}_i, y_i)\right)\right)                                             \\
+			       & = \frac{1}{n}\sum_{(\mathbf{x}_i, y_i) \in S}\frac{\partial\mathcal{L}\left(\mathbf{w}^{j}; (\mathbf{x}_i, y_i)\right)}{\partial\wkj}                                                                  \\
+			       & \overset{\ref{eq:derivL}}{=} -\frac{2}{n}\sum_{(\mathbf{x}_i, y_i) \in S}\max\left(0, 2 - \langle \mathbf{w}^{j}, \mathbf{x}_i \rangle\mathbbm{1}_{\{y_i = j\}}\right)x_{i,k}\mathbbm{1}_{\{y_i = j\}}
 		      \end{align*}
 
 	      \end{reponse}
