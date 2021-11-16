@@ -44,13 +44,13 @@ class SVM:
 
     def compute_gradient(self, x, y):
         """
-        x : numpy array of shape (minibatch size, num_features)
-        y : numpy array of shape (minibatch size, num_classes)
+        x : numpy array of shape (minibatch_size, num_features)
+        y : numpy array of shape (minibatch_size, num_classes)
         returns : numpy array of shape (num_features, num_classes)
         """
         xw = np.dot(x, self.w)  # shape: (minibatch size, num_classes)
-
-        hinge_grad = 2 * x.T @ (xw - self.hinge_offset * y) / x.shape[0]
+        p = 2 - np.multiply(xw, y)
+        hinge_grad = - 2 * x.T @ np.multiply(np.maximum(0, p), y) / x.shape[0]
         regul_grad = self.C * self.w
         return hinge_grad + regul_grad
 
