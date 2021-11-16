@@ -155,22 +155,22 @@ def load_data():
     return x_train, y_train, x_test, y_test
 
 
-def calc_loss_acc(c_values, *args, **kwargs):
-    trl, tra = {}, {}
-    tel, tea = {}, {}
+def compute_loss_acc(c_values, *args, **kwargs):
+    trl, tel = {}, {}
+    tra, tea = {}, {}
 
     for c in c_values:
         svm = SVM(C=c, *args, **kwargs)
         plot_train_losses, plot_train_accs, plot_test_losses, plot_test_accs = svm.fit(x_train, y_train, x_test, y_test)
         trl[c] = plot_train_losses
-        tra[c] = plot_train_accs
         tel[c] = plot_test_losses
+        tra[c] = plot_train_accs
         tea[c] = plot_test_accs
 
-    return trl, tra, tel, tea
+    return (trl, tel), (tra, tea)
 
 
-def show_graphics(data, figsize=6, same_plot=False, export=False, export_name='plot'):
+def show_graphics(data_to_plot, figsize=6, same_plot=False, export=False, export_name='plot'):
     import matplotlib
     if export:
         matplotlib.use("pgf")
@@ -185,26 +185,20 @@ def show_graphics(data, figsize=6, same_plot=False, export=False, export_name='p
     plt.rcParams["figure.figsize"] = (figsize, figsize)
 
     ft_size = 1.6 * figsize
-    ft_ticklabel_size = figsize
+    ft_ticklabel_size = 1.3 * figsize
 
-    trl, tra, tel, tea = data
-    epochs = np.arange(len(list(trl.values())[0]))
-    c_values = trl.keys()
-
-    def plot_var(values):
-        for c in c_values:
-            plt.plot(epochs, values[c], label=str(c))
-        plt.xlabel("epoch")
+    epochs = np.arange(len(list(data_to_plot[0][0].values())[0]))
 
     def output():
         if export:
-            plt.savefig(export_name+'.png', dpi=fig.dpi)
-            plt.savefig(export_name+'.pgf')
+            plt.savefig(export_name + '.png', dpi=fig.dpi)
+            plt.savefig(export_name + '.pgf')
         else:
             plt.show()
 
     if same_plot:
-        fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, sharex='col', sharey='row')
+        fig, axs = plt.subplots(2, 2, sharex='col', sharey='row')
+        ((ax1, ax2), (ax3, ax4)) = axs
 
         ax1.set_title("Train", fontsize=ft_size)
         ax2.set_title("Test", fontsize=ft_size)
@@ -224,52 +218,47 @@ def show_graphics(data, figsize=6, same_plot=False, export=False, export_name='p
         ax3.tick_params(axis='x', which='major', labelsize=ft_ticklabel_size)
         ax4.tick_params(axis='x', which='major', labelsize=ft_ticklabel_size)
 
-        plt.subplots_adjust(hspace=.0)
-        plt.subplots_adjust(wspace=.0)
-
         ax1.set_ylabel("loss", fontsize=ft_size)
         ax3.set_ylabel("accuracy", fontsize=ft_size)
         ax3.set_xlabel("epoch", fontsize=ft_size)
         ax4.set_xlabel("epoch", fontsize=ft_size)
 
-        for c, c_trl in trl.items():
-            ax1.plot(epochs, trl[c], label=str(c))
+        plt.subplots_adjust(hspace=.0)
+        plt.subplots_adjust(wspace=.0)
 
-        for c, c_tel in tel.items():
-            ax2.plot(epochs, tel[c], label=str(c))
+        for row_ax, row_data in zip(axs, data_to_plot):
+            for ax, d in zip(row_ax, row_data):
+                for c, y in d.items():
+                    ax.plot(epochs, y, label=str(c), linewidth=1.2, alpha=0.85, solid_capstyle='round')
 
-        for c, c_tra in tra.items():
-            ax3.plot(epochs, tra[c], label=str(c))
-
-        for c, c_tea in tea.items():
-            ax4.plot(epochs, tea[c], label=str(c))
-
-        leg = ax4.legend(loc='lower right', title='Paramètre de \n régularisation C', title_fontsize='medium', fontsize='medium', borderpad=0.4)
+        leg = ax4.legend(loc='lower right', title='Hyper-paramètre\nde régularisation C', title_fontsize='medium',
+                         fontsize='medium', borderpad=0.4, facecolor='white', framealpha=1)
         plt.setp(leg.get_title(), multialignment='center')
         leg._legend_box.align = "center"
+
+        for ax in [ax1, ax2, ax3, ax4]:
+            ax.margins(x=0.12, y=0.12)
+            ax.minorticks_off()
+            ax.grid(which='major', linestyle=(0, (5, 10)), linewidth='0.5', color='black', alpha=0.45)
 
         output()
 
     else:
-        plot_var(trl)
-        plt.ylabel("loss")
-        plt.legend(loc='lower left', title='C')
-        output()
-
-        plot_var(tel)
-        plt.ylabel("loss")
-        plt.legend(loc='lower left', title='C')
-        output()
-
-        plot_var(tra)
-        plt.ylabel("accuracy")
-        plt.legend(loc='lower right', title='C')
-        output()
-
-        plot_var(tea)
-        plt.ylabel("accuracy")
-        plt.legend(loc='lower right', title='C')
-        output()
+        for data_type, type_legend in zip(data_to_plot, ['loss', 'accuracy']):
+            for data_to_plot, type_dataset in zip(data_type, ['Train', 'Test']):
+                for c, y in data_to_plot.items():
+                    plt.plot(epochs, y, label=str(c))
+                plt.xlabel("epoch")
+                plt.ylabel(type_legend)
+                plt.title(type_dataset + ' ' + type_legend)
+                plt.grid(which='major', linestyle=(0, (5, 10)), linewidth='0.5', color='black', alpha=0.45)
+                if type_legend == 'loss':
+                    plt.legend(loc='lower left', title='Hyper-paramètre\nde régularisation C', title_fontsize='medium',
+                               fontsize='medium', borderpad=0.4, facecolor='white', framealpha=1)
+                elif type_legend == 'accuracy':
+                    plt.legend(loc='lower right', title='Hyper-paramètre\nde régularisation C', title_fontsize='medium',
+                               fontsize='medium', borderpad=0.4, facecolor='white', framealpha=1)
+                output()
 
 
 if __name__ == "__main__":
@@ -279,9 +268,9 @@ if __name__ == "__main__":
     # svm = SVM(eta=0.0001, C=2, niter=200, batch_size=5000, verbose=False)
     # train_losses, train_accs, test_losses, test_accs = svm.fit(x_train, y_train, x_test, y_test)
 
-    # To export plots losses and accuracies for different C
-    data = calc_loss_acc([1, 10, 30], eta=0.0001, niter=200, batch_size=5000, verbose=True)
-    show_graphics(data, figsize=7, same_plot=True, export=True, export_name="loss_acc_train_test")
+    # To plots losses and accuracies for different C
+    data = compute_loss_acc([1, 10, 30], eta=0.0001, niter=200, batch_size=5000, verbose=True)
+    show_graphics(data, figsize=8, same_plot=True, export=True, export_name="loss_acc_train_test")
 
     # # to infer after training, do the following:
     # y_inferred = svm.infer(x_test)
