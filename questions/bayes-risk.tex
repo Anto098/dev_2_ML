@@ -1,0 +1,218 @@
+\item \textbf{\enfr{Bayes Risk }{Risque de Bayes}}
+\points{15 points}{10 points}
+
+\newcommand{\lecture}[4]{
+	\pagestyle{myheadings}
+	\thispagestyle{plain}
+	\newpage
+	\setcounter{page}{1}
+	\noindent
+	\begin{center}
+		\framebox{
+			\vbox{\vspace{2mm}
+				\hbox to 6.28in { {\bf ECE901 Spring 2007 Statistical Learning Theory \hfill Instructor: R. Nowak} }
+				\vspace{6mm}
+				\hbox to 6.28in { {\Large \hfill #1  \hfill} }
+				\vspace{2mm}}
+		}
+	\end{center}
+	\markboth{#1}{#1}
+	\setlength{\headsep}{10mm}
+	\vspace*{4mm}
+}
+
+%notation
+
+\def\X{\ensuremath{{\mathcal X}}}
+\def\Y{\ensuremath{{\mathcal Y}}}
+\def\F{\ensuremath{{\mathcal F}}}
+\def\R{\ensuremath{{\bf R}}}
+\def\E{\mathbb{E}}
+\def\sign{\ensuremath{\mbox{sign}}}
+\def\ie{{\em i.e.,}}
+
+\enfr{In this exercise, we will show that the Bayes classifier (assuming we use the true underlying target distribution) minimize the true risk over all possible classifiers.
+
+	Recall that the goal of binary classification is to learn a mapping $f$ from the input space, $\X$, to to the class space, $\Y=\{0,1\}$.
+	We can measure the loss of a classifier $f$ using the $0-1$ loss; \ie
+	$$\ell(\hat{y},y) = \1{\hat{y}\neq y} = \left\{ \begin{array}{ll}
+			1, \;\; & \text{if } \hat{y}\neq y \\
+			0, \;\; & \text{otherwise}\end{array}
+		\right.$$
+
+	Recall that the true risk of $f$ is defined by
+	$$R(f) = \E_{(x,y)\sim \mathcal{P}}\left[\ell(f(x),y)\right]$$
+	where $\mathcal{P}$ is the underlying target distribution.
+
+	Usually, we assume that $\mathcal{P}$ is unknown and we infer $f$ from a dataset drawn from $\mathcal{P}$. For this exercise, we will consider
+	the Bayes classifier built using the target distribution $\mathcal{P}$, which is defined by
+	$$f^{\star}(x) = \left\{ \begin{array}{ll}
+			1,\;\; & \text{if }\eta(x) \geq 1/2 \\
+			0,\;\; & otherwise\end{array}
+		\right.$$
+	where
+	$\eta(x) \equiv P(Y=1 | X=x).$
+
+	\medskip
+
+	You will show that for any function $g:\X\to\Y$ we have $R(g) \geq R(f^{\star})$
+
+	\begin{enumerate}
+		\item First, show that $R(f) = P_{(x,y)\sim \mathcal{P}}(f(x)\neq y)$.
+		\item Show that, for any $g:\X\to\Y$,
+		      $$
+			      P(g(x)\neq y \mid X=x)= 1- \left[ \1{g(x)=1}\eta(x) + \1{g(x)=0}\left(1-\eta(x)\right)
+				      \right]$$
+		\item Using the answer to the previous question, and the fact that $\1{g(x)=0}=1-\1{g(x)=1}$, show that, for any $g:\X\to\Y$,
+		      $$P\left(g(x)\neq Y | X=x\right)-P\left(f^{\star}(x)\neq Y|X=x\right) = \left(2\eta(x)-1\right)\left(\1{f^{\star}(x)=1}-\1{g(x)=1}\right)
+		      $$
+		\item Finally, show that, for any $g:\X\to\Y$, $$ \left(2\eta(x)-1\right)\left(\1{f^{\star}(x)=1}-\1{g(x)=1}\right) \geq 0$$
+		\item Conclude.
+	\end{enumerate}
+}
+{
+	Dans cet exercice, nous montrerons que le classificateur de Bayes (en supposant que nous utilisions la vraie distribution cible sous-jacente) minimise le risque réel sur tous les classificateurs possibles.
+
+	Rappelons que le but de la classification binaire est d'apprendre une fonction $f$ de l'espace d'entrée, $\X$, vers l'espace des classes, $\Y=\{0,1\}$.
+	On peut mesurer la qualité d'un classificateur $f$ en utilisant la fonction de coût $0-1$; \ie
+	$$\ell(\hat{y},y) = \1{\hat{y}\neq y} = \left\{ \begin{array}{ll}
+			1, \;\; & \text{if } \hat{y}\neq y \\
+			0, \;\; & \text{otherwise}\end{array}
+		\right.$$
+
+	Rappelons que le vrai risque de $f$ est défini par
+	$$R(f) = \E_{(x,y)\sim \mathcal{P}}\left[\ell(f(x),y)\right]$$
+	où $\mathcal{P}$ est la distribution cible sous-jacente.
+
+	Habituellement, nous supposons que $\mathcal{P}$ est inconnu et nous déduisons $f$ à partir d'un ensemble de données tirées de $\mathcal{P}$. Pour cet exercice, nous considérerons
+	le classifieur de Bayes construit en utilisant la distribution cible $\mathcal{P}$, qui est définie par
+	$$f^{\star}(x) = \left\{ \begin{array}{ll}
+			1,\;\; & \text{si }\eta(x) \geq 1/2 \\
+			0,\;\; & \text{sinon}\end{array}
+		\right.$$
+	où
+	$\eta(x) \equiv P(Y=1 | X=x).$
+
+	\medskip
+
+	Vous montrerez que pour n'importe quelle fonction $g:\X\to\Y$ on a $R(g) \geq R(f^{\star})$
+
+	\begin{enumerate}
+		\item Tout d'abord, montrez que
+		      \begin{equation} \label{eq:a} \tag{a}
+			      R(f) = P_{(x,y)\sim \mathcal{P}}(f(x)\neq y)
+		      \end{equation}
+
+		      \begin{reponse}
+			      \begin{align*}
+				      R\left( f \right)
+				       & =
+				      \Esp_{(x,y) \sim \mathcal{P}}\left[\ell(f(x), y)\right]
+				      \\
+				       & =
+				      \Esp_{(x,y) \sim \mathcal{P}}\left[\1{\hat{y} \neq y}\right]
+				      \\
+				       & =
+				      \sum_{z \in \{0,1\}}\left(z \cdot P\left(\1{f(x) \neq y}\right) = z\right)
+				      \\
+				       & =
+				      P\left(\1{f(x) \neq y } = 1 \right)
+				      \\
+				       & =
+				      P_{\left(x,y\right) \sim \mathcal{P}}\left(f(x) \neq y)\right)
+			      \end{align*}
+		      \end{reponse}
+
+		\item Montrez que, pour tout $g:\X\to\Y$,
+		      \begin{equation} \label{eq:b} \tag{b}
+			      P(g(x)\neq y \mid X=x)= 1- \left[ \1{g(x)=1}\eta(x) + \1{g(x)=0}\left(1-\eta(x)\right)
+				      \right]
+		      \end{equation}
+
+		      \begin{reponse}
+			      sachant que:
+			      \begin{equation} \label{eq:*} \tag{*}
+				      \Esp_{(x, y) \sim \mathcal{P}}\left[\1{f(x) \neq y}\right] = P\left(f(x) = y\right)
+			      \end{equation}
+			      On a:
+			      \begin{align*}
+				      P\left(g(x) \neq y \mid X = x\right)
+				                                        & = 1 - P(g(x) = y \mid X = x)                                                                                                              \\
+				                                        & = 1 - \left(P(Y = 1, g(x) = 1 \mid X = x\right) + P\left(Y = 0, g(x) = 0 \mid X = x)\right)                                               \\
+				      \overset{\ref{eq:*}}              & {=} 1 - (\Esp\left[\1{y = 1} \cdot \1{g(x) = 1} \mid X = x\right] +\Esp\left[\1{y = 0} \cdot \1{g(x) = 0} \mid X = x\right])              \\
+				      \overset{\text{indep}}            & {=}             1 - (\1{g(x) = 1} \cdot \Esp\left[\1{y = 1} \mid X = x\right] + \1{g(x) = 0} \cdot \Esp\left[\1{y = 0} \mid X = x\right]) \\
+				      \overset{\ref{eq:*}}              & {=} 1 - ((\1{g(x) = 1} \cdot P(Y = 1 \mid X = x) + (\1{g(x) = 0} \cdot P(Y = 0 \mid X = x)))                                              \\
+				      \overset{\Delta \text{ de } \eta} & {=} 1 - \left(\1{g(x) = 1} \cdot \eta(x) + \1{g(x) = 0} \cdot (1 - \eta(x)\right)
+			      \end{align*}
+		      \end{reponse}
+
+		\item En utilisant la réponse à la question précédente et le fait que $\1{g(x)=0}=1-\1{g(x)=1}$, montrez que, pour toute fonction $g:\X\to\Y$,
+		      \begin{equation} \label{eq:c}
+			      \tag{c}
+			      P\left(g(x)\neq Y | X=x\right)-P\left(f^{\star}(x)\neq Y|X=x\right) = \left(2\eta(x)-1\right)\left(\1{f^{\star}(x)=1}-\1{g(x)=1}\right)
+		      \end{equation}
+
+		      \begin{reponse}
+			      En notant $a\left( x\right) = \1{g(x) = 1}$ et $b\left( x\right) = \1{f^{\star}(x) = 1}$
+			      \begin{align*}
+				         & P\left(g(x) \neq Y \mid X = x\right) - P\left(f^{\star}(x) \neq Y \mid X = x\right)                                                                                                                      \\
+				      =  &
+				      \left(1 - ((\1{g(x) = 1} \eta(x) + \1{g(x) = 0} (1 - \eta(x)))\right)-\left(1 - ((\1{f^{\star}(x) = 1} \eta(x) + \1{f^{\star}(x) = 0}(1 - \eta(x)))\right)                                                   \\
+				      =  & \left(1 - ((\1{g(x) = 1} \eta(x) + (1 - \1{g(x) = 1}) (1 - \eta(x)))\right)                                                                                                                               \\
+				      {} & -\left(1 - ((\1{f^{\star}(x) = 1} \eta(x) + (1 - \1{f^{\star}(x) = 1}) (1 - \eta(x)))\right)                                                                                                            \\
+				      =  & \left(1 - (a\left( x\right) \eta + (1 - a\left( x\right))(1 - \eta\left(x\right)))\right)-\left(1 - (b\left( x\right) \eta\left(x\right) + (1 - b\left( x\right))(1 - \eta\left(x\right)))\right)         \\
+				      =  & \left(1 - (a\left( x\right) \eta\left(x\right) + (1 - \eta\left(x\right) - a\left( x\right) + a\left( x\right) \eta\left(x\right)))\right)                                                                \\
+				      {} & -\left(1 - (b\left( x\right) \eta\left(x\right) + (1 - \eta\left(x\right) - b\left( x\right) + b\left( x\right) \eta\left(x\right)))\right)                                                               \\
+				      =  & \left(1 - (2 a\left( x\right) \eta\left(x\right) + 1 - \eta\left(x\right) - a\left( x\right))\right)-\left(1 - (2 b\left( x\right) \eta\left(x\right) + 1 - \eta\left(x\right) - b\left( x\right))\right) \\
+				      =  & \left(-2 a\left( x\right) \eta\left(x\right) + \eta\left(x\right) + a\left( x\right)\right)-\left(-2 b\left( x\right) \eta\left(x\right) + \eta\left(x\right) + b\left( x\right)\right)                   \\
+				      =  & 2 b\left( x\right) \eta\left(x\right) - 2 a\left( x\right) \eta\left(x\right) + b\left( x\right) -a\left( x\right)                                                                                        \\
+				      =  & 2 \eta\left(x\right) (b\left( x\right) - a\left( x\right)) +\left(b\left( x\right)-a\left( x\right)\right)                                                                                                \\
+				      =  & (2 \eta\left(x\right) - 1) (b\left( x\right) - a\left( x\right))                                                                                                                                          \\
+				      =  & (2 \eta\left( x\right) - 1)(\1{f^{\star}(x) = 1} - \1{g(x) = 1})
+			      \end{align*}
+		      \end{reponse}
+
+		\item Montrez que, pour tout $g:\X\to\Y$,
+		      \begin{equation} \label{eq:d} \tag{d}
+			      \left(2\eta(x)-1\right)\left(\1{f^{\star}(x)=1}-\1{g(x)=1}\right) \geq 0
+		      \end{equation}
+
+		      \begin{reponse}
+			      Nous avons 2 cas :
+
+			      \begin{itemize}
+				      \item Si $\eta(x) \geq \frac{1}{2}$ :
+
+				            Alors $\1{f^{\star}(x)=1} = \1{\eta(x) \geq \frac{1}{2}} = 1$ d'où
+
+				            \begin{equation*}
+					            \underbrace{(2 \eta(x)-1)}_{\geq 0} \underbrace{(\underbrace{\1{f^{\star}(x)=1}}_{1}-\underbrace{\1{g(x)=1}}_{0 \text{ ou } 1})}_{\geq 0} \geq 0
+				            \end{equation*}
+
+				      \item Si $\eta(x) < \frac{1}{2}$ :
+
+				            Alors $\1{f^{\star}(x)=1} = \1{\eta(x) \geq \frac{1}{2}} = 0$ d'où
+				            \begin{equation*}
+					            \underbrace{(2 \eta(x)-1)}_{< 0} \underbrace{(\underbrace{\1{f^{\star}(x)=1}}_{0}-\underbrace{\1{g(x)=1}}_{0 \text{ ou } 1})}_{\leq 0} \geq 0
+				            \end{equation*}
+			      \end{itemize}
+
+			      Pour tout $x$, on a donc $\left(2\eta(x)-1\right)\left(\1{f^{\star}(x)=1}-\1{g(x)=1}\right) \geq 0$
+		      \end{reponse}
+
+		\item Conclure.
+
+		      \begin{reponse}
+			      \begin{gather*}
+				      \left(2\eta(x)-1\right)\left(\1{f^{\star}(x)=1}-\1{g(x)=1}\right) \geq 0\\
+				      \overset{\ref{eq:c}}{\Leftrightarrow}\\
+				      P\left(g(x)\neq Y | X=x\right)-P\left(f^{\star}(x)\neq Y|X=x\right) \geq 0\\
+				      \Leftrightarrow\\
+				      P\left(g(x)\neq Y | X=x\right) \geq P\left(f^{\star}(x)\neq Y|X=x\right)\\
+				      \overset{\ref{eq:a}}{\Leftrightarrow}\\
+				      R\left(g\right) \geq R\left(f^{\star}\right)
+			      \end{gather*}
+		      \end{reponse}
+
+	\end{enumerate}
+}

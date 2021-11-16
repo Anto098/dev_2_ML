@@ -1,0 +1,53 @@
+\documentclass[11pt, french, english]{article}
+
+\input{../common/modules}
+\input{../common/commands}
+\input{../common/macros_guillaume}
+
+\usepackage{cancel}
+\usepackage{aligned-overset}
+
+%%%%%%%%% STUDENTS CHANGE THIS
+
+\providetoggle{undergrad}
+\settoggle{undergrad}{true}     %%% "true" if 3395 or "false" if 6390
+
+\providetoggle{french}
+\settoggle{french}{true}        %%% "true" if french or "false" if english
+
+\providetoggle{final}            
+\settoggle{final}{true}        %%% "true" for your final homework submission (removes instructions)
+
+%%%%%%%%%%%%%%%%%%%%% ^^^^^
+
+
+\begin{document}
+
+\setlength{\parskip}{0.3cm} \setlength{\parindent}{0cm}
+
+\begin{center}
+	\textbf{IFT-3395 Fundamentals of Machine Learning} \\
+	\textbf{Professor: Guillaume Rabusseau }
+	\par\end{center}{\large \par}
+
+\begin{center}
+	\textbf{\LARGE{\enfr{Homework 2 - Theoretical part}{Devoir 2 - Partie Th\'eorique}}} \\
+	\par\end{center}{\LARGE \par}
+	
+Mathis Koroglu : 20223045\\
+Antonin Roy : 20145595
+
+\input{questions/instructions_theory.tex}
+
+\begin{enumerate}
+	\input{questions/bias-variance.tex}
+	\input{questions/feature-maps.tex}
+	%\input{questions/derivatives.tex}
+	\input{questions/bayes-risk.tex}
+	\input{questions/leave-one-out.tex}
+
+\end{enumerate}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\end{document}

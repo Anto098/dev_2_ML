@@ -1,0 +1,304 @@
+\renewcommand{\X}{\mat{X}}
+\newcommand{\hloo}[1]{h_{D\setminus #1}}
+\newcommand{\simiid}{{\sim \atop \textit{iid}}}
+\newcommand{\Hi}{\H_{ii}}
+
+\item \textbf{\enfr{Leave one out cross-validation }{Validation croisée "leave-one-out"}}
+\points{15 points}{10 points}
+
+\enfr{
+	Let $D = \{(x_1,y_1),\dots,(x_n,y_n)\}$ be a training sample set drawn i.i.d. from an unknown distribution $p$.
+	Recall that leave-one-out cross-validation (LOO-CV) on a dataset of size $n$ is the $k$-fold cross-validation technique we discussed in class for the special case where $k=n-1$. To estimate the risk (a.k.a. the test error) of a learning algorithm using $D$, LOO-CV involves comparing each output $y_i$ with the prediction made by the hypothesis of learning algorithm trained on all the data except the $i$th sample $(x_i,y_i)$.
+
+	Formally, if we denote the hypothesis returned by the learning algorithm trained on $D\setminus \{(x_i,y_i)\}$ as $\hloo{i}$, the leave-one-out error is given by
+	$$ \mathrm{error}_{LOO} = \frac{1}{n}\sum_{i=1}^n \mathcal{L}(\hloo{i}(x_i), y_i) $$
+	where $\mathcal{L}$ is the loss function.
+
+	In this exercise, we will investigate some interesting properties of this estimator.
+
+}{
+	Soit l'ensemble de données $D = \{(x_1,y_1),\dots,(x_n,y_n)\}$ échantillonné i.i.d. à partir d'une distribution inconnue $p$.
+	Nous étudions la validation croisée "leave-one-out", qu'on pourrait traduire par "garder un exemple de côté", par la suite nous utiliserons la notation VCLOO. Pour rappel, la VCLOO sur un ensemble de données de taille $n$ consiste à réaliser $k$ validations croisées dans le cas particulier où $k=n-1$. Pour estimer le risque (c'est-à-dire l'erreur de test) d'un algorithme d'apprentissage en utilisant les données $D$, VCLOO consiste à comparer chaque sortie $y_i$ avec la prédiction effectuée à l'aide du modèle obtenu en entraînant sur toutes les données sauf l'exemple $(x_i,y_i)$.
+
+	Plus précisément, si on note $\hloo{i}$ l'hypothèse obtenue par l'algorithme d'apprentissage entraîné sur les données $D\setminus \{(x_i,y_i)\}$, l'erreur leave-one-out est donnée par:
+	$$ \mathrm{erreur}_{LOO} = \frac{1}{n}\sum_{i=1}^n \mathcal{L}(\hloo{i}(x_i), y_i) $$
+	où $\mathcal{L}$ est la fonction de perte.
+
+	Dans cet exercice, nous nous intéressons à certaines des propriétés de cet estimateur}
+
+\paragraph{\enfr{Leave-one-out is unbiased }{Leave-one-out est non biaisé}}
+\begin{enumerate}
+	\item
+	      \enfr{
+		      Recall the definition of the risk of a hypothesis $h$ for a regression problem with the mean squared error loss function.
+	      }{
+		      Rappelez la définition du risque d'une hypothèse $h$ pour un problème de régression avec la fonction de coût erreur quadratique
+	      }
+
+	      \begin{reponse}
+		      \begin{align*}
+			      \mathcal{R}\left(h\right)
+			       & = \Esp_{\left(x,y\right)\sim p}\left[\mathcal{L}\left(f\left(x\right),y\right)\right] \\
+			       & = \Esp_{\left(x,y\right)\sim p}\left[\left(y-f\left(x\right)\right)^2\right]
+		      \end{align*}
+	      \end{reponse}
+	\item
+	      \enfr{
+	      Let $D'$ denote a dataset of size $n-1$. Show that
+	      $$\Esp_{D\sim  p }[\mathrm{error}_{LOO}] = \Esp_{\substack{D'\sim  p\\ (x,y)\sim  p} }\left[(y-h_{D^{\prime}}(x))^2\right]$$
+	      where the notation $D\sim  p $ means that $D$ is drawn i.i.d. from the distribution $p$ and where $h_D$ denotes the hypothesis returned by the learning algorithm trained on $D$. Explain how this shows that $\mathrm{error}_{LOO}$ is an (almost) unbiased estimator of the risk of $h_D$.
+	      }{
+	      En utilisant $D'$ pour dénoter un ensemble de données de taille $n-1$, montrez que
+	      $$\Esp_{D\sim  p }[\mathrm{erreur}_{LOO}] = \Esp_{\substack{D'\sim  p\\ (x,y)\sim  p }}\left[(y-h_{D'}(x))^2\right]$$
+	      où la notation $D\sim  p $ signifie que $D$ est échantillonné i.i.d. à partir de la distribution $p$ et où $h_D$ est l'hypothèse obtenue par l'algorithme d'apprentissage sur les données $D$. Expliquez en quoi cela montre que $\mathrm{erreur}_{LOO}$ est un estimateur (presque) non-biaisé du risque de $h_D$.
+	      }
+
+	      \begin{reponse}
+		      \begin{align*}
+			      \Esp_{D\sim  p }\left[\mathrm{erreur}_{LOO}\right]
+			                             & = \Esp_{D\sim  p }\left[\frac{1}{n}\sum_{i=1}^n \mathcal{L}\left(\hloo{i}\left(x_i\right), y_i\right)\right]                                 \\
+			                             & = \frac{1}{n}\sum_{i=1}^n \Esp_{D\sim  p }\left[\mathcal{L}\left(\hloo{i}\left(x_i\right), y_i\right)\right]                                 \\
+			                             & = \frac{1}{n}\sum_{i=1}^n \Esp_{D^{\prime}\sim  p }\left[\mathcal{L}\left(h_{D^{\prime}}\left(x_i\right), y_i\right)\right]                  \\
+			      \overset{\text{i.i.d}} & {=} \Esp_{\left(x, y\right)\sim p}\left[\Esp_{D^{\prime}\sim  p }\left[\mathcal{L}\left(h_{D^{\prime}}\left(x\right), y\right)\right]\right] \\
+			                             & = \Esp_{\substack{D'\sim  p                                                                                                                  \\ (x,y)\sim  p }}\left[\mathcal{L}\left(h_{D^{\prime}}\left(x\right), y\right)\right]\\
+			                             & = \Esp_{\substack{D'\sim  p                                                                                                                  \\ (x,y)\sim  p }}\left[(y-h_{D'}(x))^2\right]
+		      \end{align*}
+
+		      $\mathrm{erreur}_{LOO}$ est un estimateur non-biaisé dans le sens où son biais est le plus faible (par rapport à n'importe quelle répartition train/test).
+		      Cependant, chaque terme $\mathcal{L} \left(h_{D^{\prime}}\left(x\right), y\right)$ utilise toutes les données. On n'estime donc pas le biais d'un estimateur, d'où le "presque" non biaisé
+
+	      \end{reponse}
+\end{enumerate}
+\paragraph{\enfr{Complexity of leave-one-out }{Complexité de leave-one-out}}
+\enfr{We will now consider LOO in the context of linear regression where inputs $\x_1,\dots,\x_n$ are $d$-dimensional vectors. We use $\X\in\mathbb{R}^{n\times d}$ and $\y\in\mathbb{R}^{n}$ to denote the input matrix and the vector of outputs.
+}{
+	Nous étudions maintenant LOO pour la régression linéaire où les données d'entrées $\x_1,\dots,\x_n$ sont des vecteurs à $d$ dimensions. Nous utilisons $\X\in\mathbb{R}^{n\times d}$ et $\y\in\mathbb{R}^{n}$ pour représenter la matrice des données d'entrée et le vecteur des sorties correspondantes.
+}
+\begin{enumerate}[resume]
+	\item
+	      \enfr{
+		      Assuming that the time complexity of inverting a matrix of size $m\times m$ is in $\bigo{m^3}$, what is the complexity of computing the solution of linear regression on the dataset $D$?
+	      }{
+		      En considérant que la complexité en temps pour inverser une matrice de taille $m\times m$ est en $\bigo{m^3}$, quelle sera la complexité du calcul de la solution de la régression linéaire sur l'ensemble de données $D$?
+	      }
+
+	      \begin{reponse}
+
+		      Nous avons vu (cours) que la solution analytique de la régression linéaire, lorsqu'elle existe, si $\X^\top\X$ est inversible, s'exprime :
+
+		      $$\w^{\star}=(\X^\top\X)^{-1}\X^\top\y$$
+
+		      Nous pouvons ignorer le calcul de d'un terme de biais $b$ dans cette question :
+
+		      On peut définir $X^{\prime} = \begin{bmatrix}
+				      1 \x_1^\top \\
+				      \dots       \\
+				      1 \x_{n}^\top
+			      \end{bmatrix} \in \mathbb{R}^{n \times (d+1)}$ et la complexité sera alors identique
+
+		      Le calcul de la transposé est gratuit, s'effectuant seulement avec un indexage différent.
+
+		      Pour calculer $\w^{\star}$, il faut, dans l'ordre :
+		      \begin{itemize}
+			      \item Calcul de $\X^\top\X$ en $\bigo{nd^2}$
+			      \item Calcul de $(\X^\top\X)^{-1}\in \mathbb{R}^{d\times n}$ en $\bigo{nd^2 + d^3}$ car $\X^\top\X \in \mathbb{R}^{d\times d}$
+			      \item Calcul de $(\X^\top\X)^{-1}\X^\top$ en $\bigo{nd^2 + d^3 + nd^2}$ car $\X^\top\in \mathbb{R}^{d\times n}$
+			      \item Calcul de $(\X^\top\X)^{-1}\X^\top\y$ en $\bigo{nd^2 + d^3 + nd^2 + dn}$ car $\y\in \mathbb{R}^{n\times 1}$
+		      \end{itemize}
+
+		      Soit une complexité pour le calcul de $\w^{\star}$ en
+
+		      $$\bigo{d^3 + 2nd^2 + dn} = \bigo{d^3 + nd^2}$$
+
+	      \end{reponse}
+
+	\item \enfr{
+		      Using $\X_{-i} \in \mathbb{R}^{(n-1)\times d}$ and $\y_{-i} \in \mathbb{R}^{(n-1)}$ to denote the data matrix and output vector obtained by removing the $i$th row of $\X$ and the $i$th entry of $\y$, write down a formula of the LOO-CV error for linear regression. What is the complexity of evaluating this formula?
+	      }{
+		      En notant $\X_{-i} \in \mathbb{R}^{(n-1)\times d}$ et $\y_{-i} \in \mathbb{R}^{(n-1)}$ la matrice des données d'entrées et le vecteurs des sorties obtenus en supprimant la ligne $i$ de $\X$ et la composante $i$ de $\y$, écrivez l'expression de l'erreur VCLOO pour la régression linéaire. Quelle est la complexité algorithmique du calcul de cette formule?
+	      }\\
+
+	      \begin{reponse}
+
+		      Notons $\w_{-i}^{\star}$ la solution de la régression linéaire calculée avec $\X_{-i}$ et $\y_{-i}$
+		      \begin{align*}
+			      \mathrm{erreur}_{LOO}
+			       & = \frac{1}{n}\sum_{i=1}^n \mathcal{L}(\hloo{i}(x_i), y_i)                                                        \\
+			       & = \frac{1}{n}\sum_{i=1}^n \left(y_i - h_{D\backslash i}(x_i)\right)^2                                            \\
+			       & = \frac{1}{n}\sum_{i=1}^n \left(y_i - {\w_{-i}^{\star}}^\top x_i\right)^2                                        \\
+			       & = \frac{1}{n}\sum_{i=1}^n \left(y_i-\left((\X_{-i}^\top\X_{-i})^{-1}\X_{-i}^\top\y_{-i}\right)^\top x_i\right)^2
+		      \end{align*}
+		      \begin{itemize}
+			      \item Le calcul de $\left((\X_{-i}^\top\X_{-i})^{-1}\X_{-i}^\top\y_{-i}\right)^\top$ s'effectue en $\bigo{d^3 + (n-1)d^2}=\bigo{d^3 + nd^2}$
+			      \item Le calcul de $\left(y_i-\left((\X_{-i}^\top\X_{-i})^{-1}\X_{-i}^\top\y_{-i}\right)^\top x_i\right)^2$ s'effectue en $\bigo{d^3 + nd^2 + d + (d-1) + 2} = \bigo{d^3 + nd^2 + d}$ En effet, au résultat précédent, $d + (d-1)$ opérations ($d$ multiplications $d-1$ additions) sont nécessaires pour calculer ${\w_{-i}^{\star}}^\top x_i$ puis $2$ pour le carré et la différence afin d'obtenir $\mathcal{L}(\hloo{i}(x_i), y_i)$
+
+			      \item Il faut ensuite calculer $n$ fois le résultat précédent
+		      \end{itemize}
+
+		      D'où un calcul de $\mathrm{erreur}_{VCLOO}$ en $\bigo{nd^3 + \left(nd\right)^2 + nd} = \bigo{nd^3 + \left(nd\right)^2}$
+	      \end{reponse}
+
+	\item
+	      %\iftoggle{undergrad}{{\color{red} [bonus]}}{}
+	      \enfr{
+		      It turns out that for the special case of linear regression, the leave-one-out error can be computed more efficiently.  \emph{Show} that in the case of linear regression we have
+		      $$ \mathrm{error}_{LOO} = \frac{1}{n}\sum_{i=1}^n \left(\frac{y_i - \w^{*\top}\x_i}{1-\x_i^\top(\X^\top\X)^{-1} \x_i}\right)^2$$
+		      where $\w^{\star}=(\X^\top\X)^{-1}\X^\top\y$ is the solution of linear regression computed on the whole dataset $D$. What is the complexity of evaluating this formula?
+	      }{
+		      Dans le cas particulier de la régression linéaire, l'erreur leave-one-out peut être calculée de manière plus efficace.  \emph{Montrez} que dans le cas de la régression linéaire, on a:
+		      $$ \mathrm{erreur}_{LOO} = \frac{1}{n}\sum_{i=1}^n \left(\frac{y_i - \w^{\star\top}\x_i}{1-\x_i^\top(\X^\top\X)^{-1} \x_i}\right)^2$$
+		      où $\w^{\star}=(\X^\top\X)^{-1}\X^\top\y$ est la solution de la régression linéaire calculée sur tout l'ensemble de données $D$. Quelle est la complexité du calcul de cette expression?
+	      }\\
+
+	      \begin{reponse}
+
+		      Supposons $n > d$, condition nécessaire (mais pas suffisante) pour avoir $\X^\top\X$ inversible.
+
+		      Notons $\H = \X(\X^\top\X)^{-1}\X^\top$ notre matrice de projection et $\w_{-i}^{\star} = (\X_{-i}^\top\X_{-i})^{-1}\X_{-i}^\top \y_{-i}$
+
+		      Définissons également les égalités suivantes :
+
+		      \begin{align}
+			      \label{eq:u}
+			      \tag{1}
+			      \begin{split}
+				      u_{i}
+				      &= y_i - h_{D}(x_i)\\
+				      &= y_i - \x_i^\top \w^{\star}\\
+				      &= y_i - \x_i^\top(\X^\top\X)^{-1}\X^\top \y\\
+				      &= y_i - \sum_{j=1}^{n} \x_i^\top(\X^\top\X)^{-1}\x_j^\top  y_j\\
+				      &= y_i - \sum_{j=1}^{n} \H_{i,j} y_j
+			      \end{split}
+		      \end{align}
+
+		      \begin{align*}
+			      \label{eq:u-1}
+			      \tag{2}
+			      \begin{split}
+				      u_{-i}
+				      &= y_i - h_{D\backslash i}(x_i)\\
+				      &= y_i - \x_i^\top \w_{-i}^{\star}\\
+				      &= y_i - \x_i^\top(\X_{-i}^\top\X_{-i})^{-1}\X_{-i}^\top \y_{-i}
+			      \end{split}
+		      \end{align*}
+
+		      Remarquons que :
+
+		      \begin{align*}
+			      \left(\X_{-i}^\top\X_{-i}\right)_{i,j}
+			       & = \sum_{\substack{k=1                                 \\ k\neq i}}^{n} x_{i,k}x_{k,i}\\
+			       & = \left(\sum_{k=1}^{n} x_{i,k}x_{k,i}\right) - x_ix_i \\
+			       & = \left(\X^\top\X\right)_{i,j} - x_ix_i
+		      \end{align*}
+
+		      d'où
+		      \begin{equation}
+			      \label{eq:XX}
+			      \tag{3}
+			      \X_{-i}^\top\X_{-i} = \left(\X^\top\X - \x_i\x_i^\top\right) \in \mathbb{R}^{d\times d}
+		      \end{equation}
+
+		      De même
+		      \begin{equation}
+			      \label{eq:XY}
+			      \tag{4}
+			      \X_{-i}^\top\y_{-i} = \left(\X^\top\y - \x_i y_i\right) \in \mathbb{R}^{d}
+		      \end{equation}
+
+		      D'après la formule de \href{http://en.wikipedia.org/wiki/Sherman–Morrison_formula}{Sherman–Morrison–Woodbury} et avec $\Hi = \x_i(\X^\top\X)^{-1}\x_i^\top$, en ayant $\X^\top\X$ inversible (si ce n'est pas le cas on pourrait utiliser un pseudo inverse en ajoutant $\lambda \I$ pour obtenir une solution très proche), $\X^\top\X - \x_i\x_i$ étant une matrice de rang 1 mise à jour de $\X^\top\X$, alors :
+
+		      \begin{align*}
+			      \left(\X_{-i}^\top\X_{-i}\right)^{-1}
+			      \overset{\ref{eq:XX}} & {=} \left(\X^\top\X - \x_i\x_i^\top\right)^{-1}                                                                     \\
+			                            & = \left(\X^\top\X\right)^{-1} + \frac{\left(\X^\top\X\right)^{-1}\x_i\x_i^\top\left(\X^\top\X\right)^{-1}}{1 - \Hi}
+		      \end{align*}
+
+		      Réxprimons alors $\w_{-i}^{\star}$ :
+
+		      \begin{align*}
+			      \w_{-i}^{\star}
+			                            & = \left[\left(\X^\top\X\right)^{-1} + \frac{\left(\X^\top\X\right)^{-1}\x_i\x_i^\top\left(\X^\top\X\right)^{-1}}{1 - \Hi}\right]\X_{-i}^\top \y_{-i}                                                                        \\
+			      \overset{\ref{eq:XY}} & {=} \left[\left(\X^\top\X\right)^{-1} + \frac{\left(\X^\top\X\right)^{-1}\x_i\x_i^\top\left(\X^\top\X\right)^{-1}}{1 - \Hi}\right]\left(\X^\top\y - \x_i y_i\right)                                                         \\
+			                            & = \left(\X^\top\X\right)^{-1}\X^\top\y - \left(\X^\top\X\right)^{-1}\x_i y_i                                                                                                                                                \\
+			                            & \quad + \left[\frac{\left(\X^\top\X\right)^{-1}\x_i}{1 - \Hi}\right]\left(\x_i^\top \underbrace{\left(\X^\top\X\right)^{-1}\X^\top\y}_{\w^{\star}} - \underbrace{\x_i^\top\left(\X^\top\X\right)^{-1}\x_i}_{\Hi} y_i\right) \\
+			                            & =  \w^{\star} + \left[\frac{\left(\X^\top\X\right)^{-1}\x_i}{1 - \Hi}\right]
+			      \left(
+			      \x_i^\top\w^{\star}
+			      - \Hi y_i
+			      - \frac{\cancel{\left(\X^\top\X\right)^{-1}\x_i} y_i\left(1 - \Hi\right)}{\cancel{\left(\X^\top\X\right)^{-1}\x_i}}
+			      \right)                                                                                                                                                                                                                                             \\
+			                            & =  \w^{\star} - \left[\frac{\left(\X^\top\X\right)^{-1}\x_i}{1 - \Hi}\right]
+			      \left(
+			      y_i\left(1 - \Hi\right)
+			      + \Hi y_i
+			      -\x_i^\top\w^{\star}
+			      \right)                                                                                                                                                                                                                                             \\
+			                            & = \w^{\star} - \left[\frac{\left(\X^\top\X\right)^{-1}\x_i}{1 - \Hi}\right]
+			      \left(
+			      y_i
+			      -\x_i^\top\w^{\star}
+			      \right)                                                                                                                                                                                                                                             \\
+		      \end{align*}
+
+		      Soit, d'après notre définition \ref{eq:u} de $u_i$
+
+		      \begin{equation}
+			      \label{eq:calc_w_star}
+			      \tag{5}
+			      \w_{-i}^{\star} = \w^{\star} - \left(\frac{u_i\left(\X^\top\X\right)^{-1}\x_i}{1 - \Hi}\right)
+		      \end{equation}
+
+		      D'où :
+		      \begin{align*}
+			      u_{-i}
+			      \overset{\ref{eq:u-1}}         & {=} y_i - \x_i^\top \w_{-i}^{\star}                                                                           \\
+			      \overset{\ref{eq:calc_w_star}} & {=} y_i - \x_i^\top \left(\w^{\star} - \left(\frac{u_i\left(\X^\top\X\right)^{-1}\x_i}{1 - \Hi}\right)\right) \\
+			                                     & =  y_i - \x_i^\top\w^{\star} + \frac{u_i \x_i^\top\left(\X^\top\X\right)^{-1}\x_i}{1 - \Hi}                   \\
+			      \overset{\ref{eq:u}}           & {=} u_i + \frac{u_i\Hi}{1 - \Hi}                                                                              \\
+		      \end{align*}
+
+		      Soit
+		      \begin{equation}
+			      \label{eq:cal_u-1}
+			      \tag{6}
+			      u_{-i} = \frac{u_i}{1 - \Hi}
+		      \end{equation}
+
+		      Enfin :
+		      \begin{align*}
+			      \mathrm{erreur}_{LOO}
+			                                 & = \frac{1}{n}\sum_{i=1}^n \left(y_i - h_{D\backslash i}(x_i)\right)^2                                            \\
+			                                 & = \frac{1}{n}\sum_{i=1}^n \left(y_i - \x_i^\top \w_{-i}^{\star}\right)^2                                         \\
+			      \overset{\ref{eq:u-1}}     & {=} \frac{1}{n}\sum_{i=1}^n {u_{-i}}^2                                                                           \\
+			      \overset{\ref{eq:cal_u-1}} & {=} \frac{1}{n}\sum_{i=1}^n \left(\frac{u_i}{1 - \Hi}\right)^2                                                   \\
+			      \overset{\ref{eq:u}}       & {=} \frac{1}{n}\sum_{i=1}^n \left(\frac{y_i - {\w^{\star}}^\top \x_i}{1-\x_i^\top(\X^\top\X)^{-1} \x_i}\right)^2
+		      \end{align*}
+
+		      Trouvons la complexité du calcul de cette expression :
+
+		      \begin{itemize}
+			      \item Le calcul de $(\X^\top\X)^{-1}$ s'effectue en $\bigo{d^3 + nd^2}$
+			      \item Avec $(\X^\top\X)^{-1}$ de calculé, le calcul de $(\X^\top\X)^{-1}X^\top$ s'effectue en $\bigo{nd^2}$
+			      \item Avec $(\X^\top\X)^{-1}X^\top$ de calculé, le calcul de ${\w^{\star}}$ s'effectue en $\bigo{nd}$
+			      \item Le calcul de $(\X^\top\X)^{-1}$ et ${\w^{\star}}$ s'effectue donc en $\bigo{d^3 + 2nd^2 + nd}$
+			      \item Supposons $(\X^\top\X)^{-1}$ et ${\w^{\star}}$ déjà calculés, alors nous devons calculer $n$ fois :
+			            \begin{itemize}
+				            \item[$\cdot$] ${\w^{\star}}^\top\x_i$ en $\bigo{d}$
+				            \item[$\cdot$] $\x_i^\top(\X^\top\X)^{-1}$ en $\bigo{d^2}$
+				            \item[$\cdot$] avec $\x_i^\top(\X^\top\X)^{-1}$ calculé, $\x_i^\top(\X^\top\X)^{-1} \x_i$ en $\bigo{d}$
+				            \item[$\cdot$] deux différences et une mise au carré en $\bigo{1}$
+			            \end{itemize}
+		      \end{itemize}
+
+		      Soit une complexité finale en :
+
+		      \begin{equation*}
+			      \bigo{d^3 + 2nd^2 + nd + n\left(d + d^2 + d +1\right)}
+			      = \bigo{d^3 + nd^2 + nd + n}
+			      = \bigo{d^3 + nd^2}
+		      \end{equation*}
+
+		      On remarque une complexité augmentant linéairement en nombre d'exemples, contre un terme quadratique pour $n$ dans la question précédente.
+		      Une fois ${\w^{\star}}^\top$ calculé sur l'ensemble du jeu de données, le calcul de $\mathrm{erreur}_{LOO}$ est donc gratuit
+	      \end{reponse}
+\end{enumerate}

@@ -1,0 +1,146 @@
+\item  \textbf{\enfr{Bias-Variance decomposition}{Décomposition biais/variance}}
+\points{5 points}{5 points}
+
+\enfr{
+Consider the following data generation process: an input point $x$ is drawn from an unknown distribution and the output $y$ is generated using the formula
+$$
+	y = f(x) + \epsilon,
+$$
+where $f$ is an unknown deterministic function and $\epsilon \sim \mathcal{N}(0,\,\sigma^{2})$. This  process implicitly defines a distribution over inputs and outputs; we denote this distribution by $p$.
+
+Given an i.i.d. training dataset $D=\{({x}_1, y_1),\dots,({x}_n, y_n)\}$ drawn from $p$, we can fit the hypothesis $h_D$ that minimizes the empirical risk with the squared error loss function. More formally,
+$$
+	h_D= \argmin_{h\in \mathcal H}  \sum_{i=1}^n (y_i - h({x}_i))^2
+$$
+where $\mathcal H$ is the set of hypotheses (or function class) in which we look for the best hypothesis/function.
+
+The expected error\footnote{Here the expectation is over random draws of the training set $D$ of $n$ points from the unknown distribution $p$. For example (and more formally): $\Esp[(h_D({x'})] = \Esp_{(x_1,y_1)\sim p} \cdots \Esp_{(x_n,y_n)\sim p} \Esp[(h_{\{({x}_1, y_1),\dots,({x}_n, y_n)\}}({x'})]$.}  of $h_D$ on a fixed data point $(x',y')$ is given by $\Esp[(h_D({x'}) - y')^2]$. Two meaningful terms that can be defined are:
+\begin{itemize}
+	\item The \emph{bias}, which is the difference between the expected value of hypotheses at ${ x}'$ and the true value  $f({x'})$. Formally,
+	      $$
+		      \textit{bias}= \Esp[h_D({x'})]-f({x'})
+	      $$
+	\item The \emph{variance}, which is how far hypotheses learned on different datasets are spread out from their mean $\Esp[h_D({x'})]$. Formally,
+	      $$
+		      \textit{variance}= \Esp[(h_D({x'}) - \Esp[h_D({x'})])^2]
+	      $$
+\end{itemize}
+
+Show that the expected prediction error on $({x'},y')$ can be decomposed into a sum of 3 terms: $(\textit{bias})^2$, $\textit{variance}$, and a $\textit{noise}$ term involving $\epsilon$. You need to justify all the steps in your derivation.
+
+}{
+
+Considérons les données générées de la manière suivante: une donnée $x$ est échantillonnée à partir d'une distribution inconnue, et nous observons la mesure correspondante $y$ générée d'après la formule
+$$
+	y = f(x) + \epsilon,
+$$
+où $f$ est une fonction déterministe inconnue et  $\epsilon \sim \mathcal{N}(0,\,\sigma^{2})$. Ceci définit une distribution sur les données $x$ et mesures $y$, nous notons cette distribution $p$.
+
+Étant donné un ensemble d'entraînement $D=\{({x}_1, y_1),\dots,({x}_n, y_n)\}$ échantillonné i.i.d. à partir de $p$, on définit l'hypothèse $h_D$ qui minimise le risque empirique donné par la fonction de coût erreur quadratique. Plus précisément,
+$$
+	h_D= \argmin_{h\in \mathcal H}  \sum_{i=1}^n (y_i - h({x}_i))^2
+$$
+où $\mathcal H$ est l'ensemble d'hypothèses (ou classe de fonction) dans lequel nous cherchons la meilleure fonction/hypothèse.
+
+L'erreur espérée\footnote{Ici l'espérance porte sur le choix aléatoire d'un ensemble d'entraînement $D$ de $n$ points tirés à partir de la distribution inconnue $p$. Par exemple (et plus formellement) : $\Esp[(h_D({x'})] = \Esp_{(x_1,y_1)\sim p} \cdots \Esp_{(x_n,y_n)\sim p} \Esp[(h_{\{({x}_1, y_1),\dots,({x}_n, y_n)\}}({x'})]$.} de $h_D$ sur un point donné $(x^{\prime}, y^{\prime})$ est notée $\Esp_{D \sim p^n} \left[\left(h_{D}(x^{\prime}) - y^{\prime}\right)^{2}\right]$. Deux termes importants qui peuvent être définis sont:
+\begin{itemize}
+	\item Le \emph{biais}, qui est la différence entre l'espérance de la valeur donnée par notre hypothèse en un point ${ x}'$ et la vraie valeur donnée par  $f({x'})$. Plus précisément,
+	      $$
+		      \textit{biais}= \Esp_{D \sim p^n}\left[h_D({x^{\prime}})\right]-f({x^{\prime}})
+	      $$
+	\item La \emph{variance}, est une mesure de la dispersion des hypothèse apprises sur des ensemble de données différents, autour de la moyenne $\Esp_{D \sim p^n}\left[h_D({x^{\prime}})\right]$. Plus précisément,
+	      $$
+		      \textit{variance}= \Esp_{D \sim p^n}\left[(h_D({x^{\prime}}) - \Esp_{D \sim p^n}\left[h_D({x^{\prime}})\right])^2\right]
+	      $$
+\end{itemize}
+
+Montrez que l'erreur espérée pour un point donné $({x^{\prime}},y^{\prime})$ peut être décomposée en une somme de 3 termes: $(\textit{biais})^2$, $\textit{variance}$, et un terme de $\textit{bruit}$ qui contient $\epsilon$. Vous devez justifier toutes les étapes de dérivation.
+}
+
+\newpage
+
+\begin{reponse}
+
+	Rappelons que $\Esp\left[\Esp\left[u\right]\right]= \Esp\left[u\right]$
+
+	\begin{align*}
+		\Esp\left[\left(h_D\left({x^{\prime}}\right) - y^{\prime}\right)^2\right]
+		 & = \Esp\left[\left(h_D\left({x^{\prime}}\right) - f\left(x^{\prime}\right)+f\left(x^{\prime}\right)- y^{\prime}\right)^2\right]         \\
+		 & = \Esp\left[\left(h_D\left({x^{\prime}}\right) - f\left(x^{\prime}\right)\right)^2\right]
+		+ \Esp\left[\left(f\left(x^{\prime}\right)- y^{\prime}\right)^2\right]
+		+ 2\Esp\left[\left(h_D\left({x^{\prime}}\right) - f\left(x^{\prime}\right)\right)\left(f\left(x^{\prime}\right)- y^{\prime}\right)\right] \\
+	\end{align*}
+
+	avec $\Esp\left[\left(f\left(x^{\prime}\right)- y^{\prime}\right)^2\right] = \Esp\left[\left(f\left(x^{\prime}\right) - \left(f\left(x^{\prime}\right) + \varepsilon\right)\right)^2\right] = \Esp\left[\varepsilon^2\right]$ et par linéarité de l'espérance :
+	$$\Esp\left[\left(h_D\left({x^{\prime}}\right) - f\left(x^{\prime}\right)\right)\left(f\left(x^{\prime}\right)- y^{\prime}\right)\right] =
+		\Esp\left[h_D\left({x^{\prime}}\right)f\left(x^{\prime}\right)\right]
+		- \Esp\left[h_D\left({x^{\prime}}\right)y^{\prime}\right]
+		- \Esp\left[f\left(x^{\prime}\right)^{2}\right]
+		+ \Esp\left[f\left(x^{\prime}\right)y^{\prime}\right]$$
+
+	Notons que :
+	\begin{itemize}
+		\item Comme $f$ est déterministe $\Esp\left[f\left(x^{\prime}\right)y^{\prime}\right] = f\left(x^{\prime}\right)\Esp\left[y^{\prime}\right] = f\left(x^{\prime}\right)^2$
+		      \\puisque $\Esp\left[y^{\prime}\right] = \Esp\left[f\left(x^{\prime}\right) + \varepsilon\right]= f\left(x^{\prime}\right)$
+		      car ($\Esp\left[\varepsilon\right]=0$)
+		\item $\Esp\left[f\left(x^{\prime}\right)^{2}\right] = f\left(x^{\prime}\right)^{2}$ car $f$ est déterministe
+		\item $\Esp\left[h_D\left({x^{\prime}}\right)y^{\prime}\right] = \Esp\left[h_D\left({x^{\prime}}\right)\left(f\left(x^{\prime}\right) + \varepsilon\right)\right] = \Esp\left[h_D\left({x^{\prime}}\right)f\left(x^{\prime}\right) + h_D\left({x^{\prime}}\right)\varepsilon\right] = \Esp\left[h_D\left({x^{\prime}}\right)f\left(x^{\prime}\right)\right]$ \\car $\Esp\left[h_D\left({x^{\prime}}\right)\varepsilon\right] = 0$, en effet notre hypothèse $h_D$ est indépendante du bruit, dont l'espérance vaut $0$
+	\end{itemize}
+
+	\begin{align*}
+		\Esp\left[\left(h_D\left({x^{\prime}}\right) - f\left(x^{\prime}\right)\right)\left(f\left(x^{\prime}\right)- y^{\prime}\right)\right]
+		 & =
+		\Esp\left[h_D\left({x^{\prime}}\right)f\left(x^{\prime}\right)\right]
+		- \Esp\left[h_D\left({x^{\prime}}\right)y^{\prime}\right]
+		- \Esp\left[f\left(x^{\prime}\right)^{2}\right]
+		+ \Esp\left[f\left(x^{\prime}\right)y^{\prime}\right]                      \\
+		 & = \Esp\left[h_D\left({x^{\prime}}\right)f\left(x^{\prime}\right)\right]
+		- \Esp\left[h_D\left({x^{\prime}}\right)f\left(x^{\prime}\right)\right]
+		- f\left(x^{\prime}\right)^{2}
+		+ f\left(x^{\prime}\right)^{2}                                             \\
+		 & = 0
+	\end{align*}
+
+	D'où :
+	$$\Esp\left[\left(h_D\left({x^{\prime}}\right) - y^{\prime}\right)^2\right]
+		= \Esp\left[\left(h_D\left({x^{\prime}}\right) - f\left(x^{\prime}\right)\right)^2\right]
+		+ \Esp\left[\varepsilon^2\right]$$
+
+	\begin{align*}
+		\Esp\left[\left(h_D\left({x^{\prime}}\right) - f\left(x^{\prime}\right)\right)^2\right]
+		=  & \Esp\left[\left(h_D\left({x^{\prime}}\right) - \Esp\left[h_D\left({x^{\prime}}\right)\right]+\Esp\left[h_D\left({x^{\prime}}\right)\right]-f\left(x^{\prime}\right)\right)^2\right]               \\
+		=  & \underbrace{\Esp\left[\left(h_D\left({x^{\prime}}\right) - \Esp\left[h_D\left({x^{\prime}}\right)\right]\right)^2\right]}_{variance}
+		+ \Esp\left[\left(\Esp\left[h_D\left({x^{\prime}}\right)\right]-f\left(x^{\prime}\right)\right)^2\right]                                                                                               \\
+		{} & + 2 \Esp\left[\left(h_D\left({x^{\prime}}\right) - \Esp\left[h_D\left({x^{\prime}}\right)\right]\right)\left(\Esp\left[h_D\left({x^{\prime}}\right)\right]-f\left(x^{\prime}\right)\right)\right]
+	\end{align*}
+
+	Comme $f$ est déterministe $\Esp\left[f\left(x^{\prime}\right)\right] = f\left(x^{\prime}\right)$ et $\operatorname{Var}\left(f\right) = 0$, d'où :
+	\begin{align*}
+		\Esp\left[\left(\Esp\left[h_D\left({x^{\prime}}\right)\right]-f\left(x^{\prime}\right)\right)^2\right]
+		 & = \Esp\left[\Esp\left[h_D\left({x^{\prime}}\right)\right]-f\left(x^{\prime}\right)\right]^2
+		+ \operatorname{Var}\left(\Esp\left[h_D\left({x^{\prime}}\right)\right]-f\left(x^{\prime}\right)\right)                                                                                                 \\
+		 & = \left(\Esp\left[\Esp\left[h_D\left({x^{\prime}}\right)\right]\right]-\Esp\left[f\left(x^{\prime}\right)\right]\right)^2 + \underbrace{\operatorname{Var}\left(f\left(x^{\prime}\right)\right)}_{0} \\
+		 & = \left(\Esp\left[h_D\left({x^{\prime}}\right)\right]-f\left(x^{\prime}\right)\right)^2                                                                                                              \\
+		 & = biais
+	\end{align*}
+
+	\begin{align*}
+		\Esp\left[\left(h_D\left({x^{\prime}}\right) - \Esp\left[h_D\left({x^{\prime}}\right)\right]\right)\left(\Esp\left[h_D\left({x^{\prime}}\right)\right]-f\left(x^{\prime}\right)\right)\right]
+		=  & \underbrace{\Esp\left[h_D\left({x^{\prime}}\right)\Esp\left[h_D\left({x^{\prime}}\right)\right]\right]}_{\Esp\left[h_D\left({x^{\prime}}\right)\right]^{2}}
+		-\underbrace{\Esp\left[\Esp\left[h_D\left({x^{\prime}}\right)\right]^{2}\right]}_{\Esp\left[h_D\left({x^{\prime}}\right)\right]^{2}}                                                                                                                                                                     \\
+		{} & +\underbrace{\Esp\left[\Esp\left[h_D\left({x^{\prime}}\right)\right]f\left(x^{\prime}\right)\right]}_{\underbrace{\Esp\left[f\left(x^{\prime}\right)\right]\Esp\left[\Esp\left[h_D\left({x^{\prime}}\right)\right]\right]}_{f\left(x^{\prime}\right)\Esp\left[h_D\left({x^{\prime}}\right)\right]}}
+		- \underbrace{\Esp\left[h_D\left({x^{\prime}}\right) f\left(x^{\prime}\right)\right]}_{\underbrace{\Esp\left[f\left(x^{\prime}\right)\right]\Esp\left[h_D\left({x^{\prime}}\right)\right]}_{f\left(x^{\prime}\right)\Esp\left[h_D\left({x^{\prime}}\right)\right]}}                                      \\
+		=  & 0
+	\end{align*}
+
+	Car $\operatorname{Cov}\left(f\left(x^{\prime}\right), h_D\left({x^{\prime}}\right)\right)=0$, étant donné que $f\left(x^{\prime}\right)$ est ici constant pour un $x$ donné
+
+	En regroupant tous les termes on obtient :
+	\begin{align*}
+		\Esp\left[\left(h_D\left({x^{\prime}}\right) - y^{\prime}\right)^2\right]
+		 & = biais + variance + \Esp\left[\varepsilon^2\right]
+	\end{align*}
+
+	avec $\Esp\left[\varepsilon^{2}\right]
+		= \operatorname{Var}[\varepsilon]+\underbrace{\Esp\left[\varepsilon\right]^{2}}_{0} = \operatorname{Var}[\varepsilon] = \sigma^2$
+\end{reponse}

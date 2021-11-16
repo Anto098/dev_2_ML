@@ -1,0 +1,90 @@
+\item \textbf{\enfr{Derivatives and Gradients }{Dérivés et gradients}}
+\points{IFT6390 - Non demandé}{14 points}
+
+\enfr{In this question, we will look at derivatives and gradients. Chapter 5 of Mathematics for Machine Learning book can be used as reference for this question.}{Dans cette question, nous examinerons les dérivées et les gradients. Le Chapitre 5 de ``Mathematics for Machine Learning'' peut être utilisé comme référence pour cette question.}
+
+\begin{enumerate}
+	\item{[2 points] \enfr{
+		            Compute the derivative $f^{'}\left(x\right)$ for:\\
+		            $$f\left(x\right)=\log\left(x^4\right)\sin\left(x^3\right)$$\\
+	            }
+	            {Calculer la dérivée $f^{'}\left(x\right)$ pour: \\
+		            $$f\left(x\right)=\log\left(x^4\right)\sin\left(x^3\right)$$\\}
+	      }
+	      
+	      \begin{reponse}
+	      	\begin{align*}
+	      		f^{'}\left(x\right)
+	      		&= \log\left(x^4\right)^\prime \sin\left(x^3\right) + \sin\left(x^3\right)^\prime \log\left(x^4\right)\\
+	      		&= \frac{4}{x} \sin\left(x^3\right) + 3x^2\cos\left(x^3\right)\log\left(x^4\right)
+	      	\end{align*}
+	      \end{reponse}
+
+	\item { [2 points] \enfr{Compute the derivative $f^{'}\left(x\right)$ for:\\
+		      $$f\left(x\right)=\exp\left(\frac{-1}{2\sigma }\left(x-\mu \right)^2\right)$$
+		      Here $\sigma$,$\mu$ $\in \mathbb{R}$.\\~\\
+	      }
+	      { Calculer la dérivée $f^{'}\left(x\right)$ pour:\\ $$f\left(x\right)=\exp\left(\frac{-1}{2\sigma }\left(x-\mu \right)^2\right)$$
+		      où $\sigma,\mu \in \mathbb{R}.$\\~\\}
+	      }
+	      
+	      \begin{reponse}
+	      	\begin{align*}
+	      		f^{'}\left(x\right)
+	      		&= \left(\frac{-1}{2\sigma }\left(x-\mu \right)^2\right)^\prime \exp\left(\frac{-1}{2\sigma }\left(x-\mu \right)^2\right)\\
+	      		&= \frac{-1}{2\sigma } 2 \left(x -\mu \right) \exp\left(\frac{-1}{2\sigma }\left(x-\mu \right)^2\right)\\
+	      		&= \frac{\mu-x}{\sigma} \exp\left(\frac{-1}{2\sigma }\left(x-\mu \right)^2\right)
+	      	\end{align*}
+	      \end{reponse}
+
+	\item { [4 points] \enfr{Consider the following functions:\\
+		      $$f_1\left(x\right)=\sin\left(x_1\right)\cos\left(x_2\right), \:x\:\in \:\mathbb{R}^2$$
+		      $$f_2\left(x,y\right)=x^Ty\:$$
+		      Here $\:x,y\:\in \:\mathbb{R}^n$.\\
+		      $$f_3\left(x\right)=xx^T\:$$
+		      Here $\:x\:\in \:\mathbb{R}^n$.\\~\\
+		      i. What are the dimensions of $\frac{\partial f_i}{\partial x}$?\\
+		      ii. Compute the jacobians.\\~\\
+
+	      }{Considérez les fonctions suivantes:\\
+		      $$f_1\left(x\right)=\sin\left(x_1\right)\cos\left(x_2\right), \:x\:\in \:\mathbb{R}^2$$
+		      $$f_2\left(x, y\right)=x^{\top}y\:$$
+		      Ici $\:x,y\:\in \:\mathbb{R}^n$.\\
+		      $$f_3\left(x\right)=xx^\top\:$$
+		      Ici $\:x\:\in \:\mathbb{R}^n$.\\~\\
+		      i. Quelles sont les dimensions de $\frac{\partial f_i}{\partial x}$?\\
+		      ii. Calculer le jacobien.\\~\\}
+	      }
+
+	\item { [6 points] \enfr{Compute the derivatives $\frac{df}{dx}$ of the following functions:\\
+	      i. Use the chain rule. Provide the dimensions of every derivative.\\
+	      $$f\left(z\right)=exp\left(-\frac{1}{2}z\right)$$
+	      $$z=g\left(y\right)=y^TS^{-1}y$$
+	      $$y=h\left(x\right)=x-\mu$$
+	      Here $ x, \mu \in \mathbb{R}^D, S \in \mathbb{R}^{D \times D}$.\\~\\
+	      ii. $$f\left(x\right)=tr\left(xx^{\top}+\sigma I\right)\:$$
+	      Here $\:x\in \mathbb{R}^D$ and $tr\left(A\right)$ is the trace of A.\\~\\
+	      iii. Use the chain rule to compute the derivatives and provide the dimensions of the partial derivative as well.\\
+	      $$f=\tanh\left(z\right)$$
+	      Here $f \in \mathbb{R}^M$.
+	      $$z=Ax+b\:$$
+	      Here $\:x\:\in \mathbb{R}^N,\:A\in \:\mathbb{R}^{M \times N}\:,\:b\:\in \:\mathbb{R}^M$.\\~\\
+
+	      }
+	      {Calculer les dérivées $\frac{df}{dx}$ des fonctions suivantes:\\
+	      i. Utilisez la règle de la chaîne. Donnez les dimensions de chaque dérivée.\\
+	      $$f\left(z\right)=\exp\left(-\frac{1}{2}z\right)$$
+	      $$z=g\left(y\right)=y^{\top}S^{-1}y$$
+	      $$y=h\left(x\right)=x-\mu$$
+	      où $x, \mu \in \mathbb{R}^D, S \in \mathbb{R}^{D \times D}$.\\~\\
+	      ii. $$f\left(x\right)=tr\left(xx^{\top}+\sigma I\right)\:$$
+	      Ici $\:x\in \mathbb{R}^D$ and $tr\left(A\right)$ est la trace de A.\\~\\
+	      iii. Utilisez la règle de la chaîne pour calculer les dérivées et fournir également les dimensions de la dérivée partielle.\\
+	      $$f=\tanh\left(z\right)$$
+	      Ici $f \in \mathbb{R}^M$.
+	      $$z=Ax+b\:$$
+	      Ici $\:x\:\in \mathbb{R}^N,\:A\in \:\mathbb{R}^{M \times N}\:,\:b\:\in \:\mathbb{R}^M$.\\~\\
+	      }
+	      }
+
+\end{enumerate}

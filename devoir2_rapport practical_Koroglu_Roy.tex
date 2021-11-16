@@ -1,0 +1,160 @@
+\documentclass[11pt, french, english]{article}
+\usepackage[margin=0.5in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{bbm}
+\usepackage{mathtools}
+\usepackage{ulem}
+\usepackage{url}
+\usepackage{graphicx}
+\usepackage{lmodern}
+\usepackage[english]{babel}
+
+\allowdisplaybreaks
+
+\makeatletter
+\addto\extrasfrench{%
+   \providecommand{\og}{\leavevmode\flqq~}%
+   \providecommand{\fg}{\ifdim\lastskip>\z@\unskip\fi~\frqq}%
+}
+\makeatother
+
+\usepackage{listings}
+\usepackage{etoolbox}
+\input{../common/commands}
+
+%%%%%%%%% STUDENTS CHANGE THIS
+
+\providetoggle{undergrad}
+\settoggle{undergrad}{true}     %%% "true" if 3395 or "false" if 6390
+
+\providetoggle{french}
+\settoggle{french}{true}        %%% "true" if french or "false" if english
+
+\providetoggle{final}            
+\settoggle{final}{true}        %%% "true" for your final homework submission (removes instructions)
+
+\newcommand{\question}[1]{\\ \textbf{Question.} #1 }
+\usepackage[colorlinks=false]{}
+
+
+\def\wkj{w_{k}^{j}}
+
+\begin{document}
+\setlength{\parskip}{0.3cm} \setlength{\parindent}{0cm}
+\begin{center}
+	\textbf{\proftitle{IFT 3395 Fondements de l'apprentissage machine \\ Prof. Guillaume Rabusseau}{IFT 6390 Fundamentals of Machine Learning \\ Ioannis Mitliagkas}}
+	\par\end{center}{\large \par}
+
+\begin{center}
+	\textbf{\LARGE{\enfr{Homework É - Practical component - Answers}{Devoir 2 - Partie pratique - rapport}}} \\
+	\par\end{center}{\LARGE \par}
+
+Mathis Koroglu : 20223045\\
+Antonin Roy : 20145595
+
+\section*{\enfr{One-versus-all, L2 loss SVM}{Un-contre-tous, Perte L2 SVM}}
+
+\begin{enumerate}
+	\item \points{5 points}{5 points}\\
+	      \begin{reponse}
+		      \begin{align*}
+			      \frac{\partial}{\partial w_k^j}\left(\frac{C}{2}\sum_{j'=1}^{m} \lVert \mathbf{w}^{j'} \rVert_2^2 \right)
+			       & = \frac{C}{2} \frac{\partial}{\partial w_k^j}\left(\sum_{j^{\prime}=1}^{m}\sum_{k^{\prime}=1}^{p} {w_{k^{\prime}}^{j^{\prime}}}^{2}\right) \\
+			       & = \frac{C}{2} \frac{\partial {w_{k}^{j}}^2}{\partial w_k^j}                                                                                \\
+			       & = \frac{C}{2} 2 w_{k}^{j}                                                                                                                  \\
+			       & = Cw_{k}^{j}
+		      \end{align*}
+	      \end{reponse}
+
+	\item \points{10 points}{10 points}\\
+	      \begin{reponse}
+
+		      \begin{equation}
+			      \label{eq:deriv_prod_scal}
+			      \frac{\partial \langle \mathbf{w}^{j^{\prime}}, \mathbf{x}_i \rangle}{\partial\wkj}
+			      = \begin{cases}
+				      x_{i,k} & \text{ si } j^{\prime} = j \\
+				      0       & \text{ sinon }
+			      \end{cases}
+		      \end{equation}
+
+		      \begin{equation}
+			      \label{eq:deriv_prod_scal_1}
+			      \frac{\partial \langle \mathbf{w}^{j^{\prime}}, \mathbf{x}_i \rangle\mathbbm{1}_{\{y_i = j^{\prime}\}}}{\partial\wkj}
+			      = \begin{cases}
+				      x_{i,k}\mathbbm{1}_{\{y_i = j^{\prime}\}} & \text{ si } j^{\prime} = j \\
+				      0                                         & \text{ sinon }
+			      \end{cases}
+		      \end{equation}
+
+		      \begin{equation}
+			      \label{eq:2-deriv_prod_scal_1}
+			      \frac{\partial}{\partial\wkj}\left(2 - \langle \mathbf{w}^{j^{\prime}}, \mathbf{x}_i \rangle\mathbbm{1}_{\{y_i = j^{\prime}\}}\right)
+			      = \begin{cases}
+				      - x_{i,k}\mathbbm{1}_{\{y_i = j^{\prime}\}} & \text{ si } j^{\prime} = j \\
+				      0                                           & \text{ sinon }
+			      \end{cases}
+		      \end{equation}
+
+		      \begin{align}
+			      \label{eq:deriv_max}
+			      \begin{split}
+				      \frac{\partial}{\partial\wkj}\max\left(0, 2 - \langle \mathbf{w}^{j^{\prime}}, \mathbf{x}_i \rangle\mathbbm{1}_{\{y_i = j^{\prime}\}}\right)
+				      &= \underbrace{\frac{\partial\left(\max\left(0, 2 - \langle \mathbf{w}^{j^{\prime}}, \mathbf{x}_i \rangle\mathbbm{1}_{\{y_i = j^{\prime}\}}\right)\right)}{\partial\left(2 - \langle \mathbf{w}^{j^{\prime}}, \mathbf{x}_i \rangle\mathbbm{1}_{\{y_i = j^{\prime}\}}\right)}}_{\begin{cases}
+						      1 & \text{ si } 2 >\langle \mathbf{w}^{j^{\prime}}, \mathbf{x}_i \rangle\mathbbm{1}_{\{y_i = j^{\prime}\}} \\
+						      0 & \text{ sinon }
+					      \end{cases}}\underbrace{\frac{\partial\left(2 - \langle \mathbf{w}^{j^{\prime}}, \mathbf{x}_i \rangle\mathbbm{1}_{\{y_i = j^{\prime}\}}\right)}{\partial\wkj}}_{\begin{cases}
+						      - x_{i,k}\mathbbm{1}_{\{y_i = j^{\prime}\}} & \text{ si } j^{\prime} = j \\
+						      0                                           & \text{ sinon }
+					      \end{cases}}\\
+				      &= \begin{cases}
+					      - x_{i,k}\mathbbm{1}_{\{y_i = j^{\prime}\}} & \text{ si } j^{\prime} = j \text{ et } 2 >\langle \mathbf{w}^{j^{\prime}}, \mathbf{x}_i \rangle\mathbbm{1}_{\{y_i = j^{\prime}\}} \\
+					      0                                           & \text{ sinon }
+				      \end{cases}
+			      \end{split}
+		      \end{align}
+
+		      \begin{align}
+			      \label{eq:derivL}
+			      \begin{split}
+				      \frac{\partial\mathcal{L}\left(\mathbf{w}^{j^{\prime}}; (\mathbf{x}_i, y_i)\right)}{\partial\wkj}
+				      &= \frac{\partial\left(\max\left(0, 2 - \langle \mathbf{w}^{j^{\prime}}, \mathbf{x}_i \rangle\mathbbm{1}_{\{y_i = j^{\prime}\}}\right)\right)^2}{\partial\wkj}\\
+				      &= 2\max\left(0, 2 - \langle \mathbf{w}^{j^{\prime}}, \mathbf{x}_i \rangle\mathbbm{1}_{\{y_i = j^{\prime}\}}\right)\frac{\partial}{\partial\wkj}\max\left(0, 2 - \langle \mathbf{w}^{j^{\prime}}, \mathbf{x}_i \rangle\mathbbm{1}_{\{y_i = j^{\prime}\}}\right)\\
+				      &= \begin{cases}
+					      -2\underbrace{\max\left(0, 2 - \langle \mathbf{w}^{j^{\prime}}, \mathbf{x}_i \rangle\mathbbm{1}_{\{y_i = j^{\prime}\}}\right)}_{0 \text{ si } 2 \leq \langle \mathbf{w}^{j^{\prime}}, \mathbf{x}_i \rangle\mathbbm{1}_{\{y_i = j^{\prime}\}}}x_{i,k}\mathbbm{1}_{\{y_i = j^{\prime}\}} & \text{ si } j^{\prime} = j \text{ et } 2 >\langle \mathbf{w}^{j^{\prime}}, \mathbf{x}_i \rangle\mathbbm{1}_{\{y_i = j^{\prime}\}} \\
+					      2\max\left(0, 2 - \langle \mathbf{w}^{j^{\prime}}, \mathbf{x}_i \rangle\mathbbm{1}_{\{y_i = j^{\prime}\}}\right) \cdot 0 = 0                                                                                                                                                           & \text{ sinon }
+				      \end{cases}\\
+				      &= \begin{cases}
+					      -2\max\left(0, 2 - \langle \mathbf{w}^{j^{\prime}}, \mathbf{x}_i \rangle\mathbbm{1}_{\{y_i = j^{\prime}\}}\right)x_{i,k}\mathbbm{1}_{\{y_i = j^{\prime}\}} & \text{ si } j^{\prime} = j \\
+					      0                                                                                                                                                          & \text{ sinon }
+				      \end{cases}
+			      \end{split}
+		      \end{align}
+
+		      \begin{align*}
+			      \frac{\partial}{\partial\wkj} \left(\frac{1}{n}\sum_{(\mathbf{x}_i, y_i) \in S} \sum_{j'=1}^{m} \mathcal{L}\left(\mathbf{w}^{j'}; (\mathbf{x}_i, y_i))\right)\right)
+			       & = \frac{\partial}{\partial w_{k}^{j}} \left(\frac{1}{n}\sum_{(\mathbf{x}_i, y_i) \in S} \left(\mathcal{L}\left(\mathbf{w}^{j}; (\mathbf{x}_i, y_i)\right) +\underbrace{\sum_{\substack{j^{\prime}=1 \\ j^{\prime} \neq j}}^{m} \mathcal{L}\left(\mathbf{w}^{j^{\prime}}; (\mathbf{x}_i, y_i)\right)}_{0 \text{ d'après } \ref{eq:derivL}}\right)\right)\\
+			       & = \frac{\partial}{\partial w_{k}^{j}} \left(\frac{1}{n}\sum_{(\mathbf{x}_i, y_i) \in S} \mathcal{L}\left(\mathbf{w}^{j}; (\mathbf{x}_i, y_i)\right)\right)                                          \\
+			       & = \frac{1}{n}\sum_{(\mathbf{x}_i, y_i) \in S}\frac{\partial\mathcal{L}\left(\mathbf{w}^{j}; (\mathbf{x}_i, y_i)\right)}{\partial\wkj}                                                               \\
+			       & = -\frac{2}{n}\sum_{(\mathbf{x}_i, y_i) \in S}\max\left(0, 2 - \langle \mathbf{w}^{j}, \mathbf{x}_i \rangle\mathbbm{1}_{\{y_i = j^{\prime}\}}\right)x_{i,k}\mathbbm{1}_{\{y_i = j^{\prime}\}}
+		      \end{align*}
+
+	      \end{reponse}
+	      \newpage
+
+	\item[4.] Graphiques \points{10 points}{10 points}
+
+		\begin{reponse}
+			\begin{figure}[H]
+				\begin{center}
+					\input{loss_acc_train_test.pgf}
+				\end{center}
+				\caption{Perte et accuracy avec différentes valeurs de pondération de la pénalité L2 pour un classifeur svm pour l'ensemble d'entrainement et de test. \\\\Valeurs suivantes d'hyperparamètres : Taux d'apprentissage=0.0001, nombre d'epochs=200, taille de batch=5000}
+			\end{figure}
+		\end{reponse}
+
+\end{enumerate}
+\end{document}
