@@ -35,7 +35,7 @@ class SVM:
         xwy = np.multiply(xw, y)
         p = self.hinge_offset - xwy
 
-        max_func = np.maximum(np.zeros_like(p), p)
+        max_func = np.maximum(0, p)
         squared_l = np.power(max_func, 2)
         mean_loss_per_class = np.sum(squared_l, axis=1)
 
